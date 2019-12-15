@@ -1,0 +1,20 @@
+node_modules/
+npm-debug.log*
+package-lock.json
+
+# python
+*.pyc
+
+# vscode
+.vscode/**
+!/.vscode/launch.json
+!/.vscode/settings.json
+
+# artifacts
+/lib/
+/dist/
+/src/**/*.js
+/src/**/*.d.ts
+
+# graphics tests out data
+/tests/e2e/graphics/.gendata/
