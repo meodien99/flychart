@@ -1,0 +1,5 @@
+{
+    "rulesDirectory": ["vrsource-tslint-rules/rules"],
+    "rules": {
+    }
+ }

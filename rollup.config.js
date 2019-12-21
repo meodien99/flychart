@@ -23,12 +23,11 @@ function getConfig(inputFile, type, isProd) {
 		input: inputFile,
 		output: {
 			format: type === 'module' ? 'esm' : 'iife',
-			file: `./dist/lightweight-charts.${suffix}.${mode}.js`,
+			file: `./dist/flycharts.${suffix}.${mode}.js`,
 			banner: `
 /*!
 * @license
-* TradingView Lightweight Charts v${currentVersion}
-* Copyright (c) 2019 TradingView, Inc.
+* Flycharts v${currentVersion}
 * Licensed under Apache License 2.0 https://www.apache.org/licenses/LICENSE-2.0
 */`.trim(),
 		},
@@ -54,13 +53,13 @@ function getConfig(inputFile, type, isProd) {
 
 const configs = [
 	getConfig('./lib/src/index.js', 'module', false),
-	getConfig('./lib/src/standalone.js', 'standalone', false),
+	// getConfig('./lib/src/standalone.js', 'standalone', false),
 ];
 
 if (process.env.NODE_ENV === 'production') {
 	configs.push(
 		getConfig('./lib/src/index.js', 'module', true),
-		getConfig('./lib/src/standalone.js', 'standalone', true),
+		// getConfig('./lib/src/standalone.js', 'standalone', true),
 	);
 }
 
