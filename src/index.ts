@@ -1,1 +1,4 @@
-export const greet = () => console.log('Hello, world!')
+
+export function version(): string {
+    return '<@VERSION@>';
+}
