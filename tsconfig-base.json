@@ -1,5 +1,6 @@
 {
 	"compilerOptions": {
+		"sourceMap": true,
 		"allowSyntheticDefaultImports": true,
 		"declaration": true,
 		"importHelpers": true,
@@ -12,7 +13,8 @@
 			"es2016.array.include",
 			"es5"
 		],
-		"module": "esnext",
+		// "module": "esnext",
+		"module": "commonjs",
 		"moduleResolution": "node",
 		"noEmitOnError": true,
 		"noFallthroughCasesInSwitch": true,
