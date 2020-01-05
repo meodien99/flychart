@@ -1,9 +1,11 @@
-function lowerbound(
-    array,
-    value,
-    compareFnc,
-    start = 0,
-    to = array.length
+export type LowerBoundComparatorType<ArrayElementType, ValueType> = (a: ArrayElementType, b: ValueType) => boolean;
+
+export function lowerbound<ArrayElementType, ValueType>(
+    array: ReadonlyArray<ArrayElementType>,
+    value: ValueType,
+    compareFnc: LowerBoundComparatorType<ArrayElementType, ValueType>,
+    start: number = 0,
+    to: number = array.length
 ): number {
     let count = to - start;
     while(0 < count) {
@@ -20,12 +22,14 @@ function lowerbound(
     return start;
 }
 
-function upperbound(
-    array,
-    value,
-    compareFnc,
-    start = 0,
-    to = array.length
+export type UpperBoundComparatorType<ArrayElementType, ValueType> = (a: ValueType, b: ArrayElementType) => boolean;
+
+export function upperbound<ArrayElementType, ValueType>(
+    array: ArrayElementType[],
+    value: ValueType,
+    compareFnc: UpperBoundComparatorType<ArrayElementType, ValueType>,
+    start: number = 0,
+    to: number = array.length
 ): number {
     let count = to - start;
     while(0 < count) {
