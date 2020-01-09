@@ -283,7 +283,7 @@ export class CanvasWrapper implements CanvasRenderingContext2D {
         return this._ctx.measureText(text);
     }
     
-    strokeText(text: string, x: number, y: number, maxWidth?: number | undefined): void {
+    public strokeText(text: string, x: number, y: number, maxWidth?: number | undefined): void {
         if(this._rto !== 1) {
             this.font = this.font.replace(fontSizeRegex, (w: string, m: number, u: string) => (m * this._rto) + u)
         }
@@ -299,70 +299,238 @@ export class CanvasWrapper implements CanvasRenderingContext2D {
         }
     }
 
-    drawImage(image: CanvasImageSource, dx: number, dy: number): void;
-    drawImage(image: CanvasImageSource, dx: number, dy: number, dw: number, dh: number): void;
-    drawImage(image: CanvasImageSource, sx: number, sy: number, sw: number, sh: number, dx: number, dy: number, dw: number, dh: number): void;
-    drawImage(image: any, sx: any, sy: any, sw?: any, sh?: any, dx?: any, dy?: any, dw?: any, dh?: any) {
+    public drawImage(image: CanvasImageSource, dx: number, dy: number): void;
+    public drawImage(image: CanvasImageSource, dx: number, dy: number, dw: number, dh: number): void;
+    public drawImage(image: CanvasImageSource, sx: number, sy: number, sw: number, sh: number, dx: number, dy: number, dw: number, dh: number): void;
+    public drawImage(image: any, sx: any, sy: any, sw?: any, sh?: any, dx?: any, dy?: any, dw?: any, dh?: any) {
         if (image instanceof HTMLCanvasElement) {
             return this._drawImagePatchedSourceAndDest(image, sx, sy, sw as number, sh as number, dx as number, dy as number, dw as number, dh as number);
         } else {
             return this._drawImagePatchedSource(image, sx, sy, sw as number, sh as number, dx as number, dy as number, dw as number, dh as number);
         }
     }
-    createImageData(sw: number, sh: number): ImageData;
-    createImageData(imagedata: ImageData): ImageData;
-    createImageData(sw: any, sh?: any) {
-        throw new Error("Method not implemented.");
+
+    public createImageData(sw: number, sh: number): ImageData;
+    public createImageData(imagedata: ImageData): ImageData;
+    public createImageData(sw: any, sh?: any) {
+        if(isNumber(sw)) {
+            return this._ctx.createImageData(sw, sh as number);
+        } else {
+            return this._ctx.createImageData(sw);
+        }
     }
-    getImageData(sx: number, sy: number, sw: number, sh: number): ImageData {
-        throw new Error("Method not implemented.");
+
+    public getImageData(sx: number, sy: number, sw: number, sh: number): ImageData {
+        return this._ctx.getImageData(sx, sy, sw, sh);
     }
-    putImageData(imagedata: ImageData, dx: number, dy: number): void;
-    putImageData(imagedata: ImageData, dx: number, dy: number, dirtyX: number, dirtyY: number, dirtyWidth: number, dirtyHeight: number): void;
-    putImageData(imagedata: any, dx: any, dy: any, dirtyX?: any, dirtyY?: any, dirtyWidth?: any, dirtyHeight?: any) {
-        throw new Error("Method not implemented.");
+
+    public putImageData(imagedata: ImageData, dx: number, dy: number): void;
+    public putImageData(imagedata: ImageData, dx: number, dy: number, dirtyX: number, dirtyY: number, dirtyWidth: number, dirtyHeight: number): void;
+    public putImageData(imagedata: any, dx: any, dy: any, dirtyX?: any, dirtyY?: any, dirtyWidth?: any, dirtyHeight?: any) {
+        if(dirtyX === undefined) {
+            this._ctx.putImageData(imagedata, dx, dy);
+        } else {
+            this._ctx.putImageData(imagedata, dx, dy, dirtyX, dirtyY as number, dirtyWidth as number, dirtyHeight as number);
+        }
     }
-    lineCap: CanvasLineCap;
-    lineDashOffset: number;
-    lineJoin: CanvasLineJoin;
-    lineWidth: number;
-    miterLimit: number;
-    getLineDash(): number[] {
-        throw new Error("Method not implemented.");
+
+    public get lineCap(): CanvasLineCap {
+        return this._ctx.lineCap;
     }
-    setLineDash(segments: number[]): void {
-        throw new Error("Method not implemented.");
+
+    public set lineCap(value: CanvasLineCap) {
+        this._ctx.lineCap = value;
     }
-    direction: CanvasDirection;
-    font: string;
-    textAlign: CanvasTextAlign;
-    textBaseline: CanvasTextBaseline;
-    arc(x: number, y: number, radius: number, startAngle: number, endAngle: number, anticlockwise?: boolean | undefined): void {
-        throw new Error("Method not implemented.");
+
+    public get lineDashOffset(): number {
+        return this._ctx.lineDashOffset;
     }
-    arcTo(x1: number, y1: number, x2: number, y2: number, radius: number): void {
-        throw new Error("Method not implemented.");
+
+    public set lineDashOffset(value: number) {
+        this._ctx.lineDashOffset = value;
     }
-    bezierCurveTo(cp1x: number, cp1y: number, cp2x: number, cp2y: number, x: number, y: number): void {
-        throw new Error("Method not implemented.");
+
+    public get lineJoin(): CanvasLineJoin {
+        return this._ctx.lineJoin;
     }
-    closePath(): void {
-        throw new Error("Method not implemented.");
+
+    public set lineJoin(value: CanvasLineJoin) {
+        this._ctx.lineJoin = value;
     }
-    ellipse(x: number, y: number, radiusX: number, radiusY: number, rotation: number, startAngle: number, endAngle: number, anticlockwise?: boolean | undefined): void {
-        throw new Error("Method not implemented.");
+
+    public get lineWidth(): number {
+        return this._ctx.lineWidth;
     }
-    lineTo(x: number, y: number): void {
-        throw new Error("Method not implemented.");
+
+    public set lineWidth(value: number) {
+        this._ctx.lineWidth = value;
     }
-    moveTo(x: number, y: number): void {
-        throw new Error("Method not implemented.");
+
+    public get miterLimit(): number {
+        return this._ctx.miterLimit;
     }
-    quadraticCurveTo(cpx: number, cpy: number, x: number, y: number): void {
-        throw new Error("Method not implemented.");
+
+    public set miterLimit(value: number) {
+        this._ctx.miterLimit = value;
     }
-    rect(x: number, y: number, w: number, h: number): void {
-        throw new Error("Method not implemented.");
+
+    public getLineDash(): number[] {
+        return this._ctx.getLineDash();
+    }
+
+    public setLineDash(segments: number[]): void {
+        this._ctx.setLineDash(segments);
+    }
+
+    public get direction(): CanvasDirection {
+        return this._ctx.direction;
+    }
+
+    public set direction(value: CanvasDirection) {
+        this._ctx.direction = value;
+    }
+
+    public get font(): string {
+        return this._ctx.font;
+    }
+
+    public set font(value: string) {
+        this._ctx.font = value;
+    }
+
+    public get textAlign(): CanvasTextAlign {
+        return this._ctx.textAlign;
+
+    }
+
+    public set textAlign(value: CanvasTextAlign) {
+        this._ctx.textAlign = value;
+    }
+
+    public get textBaseline(): CanvasTextBaseline {
+        return this._ctx.textBaseline;
+    }
+
+    public set textBaseline(value: CanvasTextBaseline) {
+        this._ctx.textBaseline = value;
+    }
+    
+    public arc(x: number, y: number, radius: number, startAngle: number, endAngle: number, anticlockwise?: boolean | undefined): void {
+       this._ctx.arc(x * this._rto, y * this._rto, radius * this._rto, startAngle, endAngle, anticlockwise);
+    }
+    
+    public arcTo(x1: number, y1: number, x2: number, y2: number, radius: number): void {
+        this._ctx.arcTo(x1 * this._rto, y1 * this._rto, x2 * this._rto, y2 * this._rto, radius * this._rto);
+    }
+
+    public bezierCurveTo(cp1x: number, cp1y: number, cp2x: number, cp2y: number, x: number, y: number): void {
+        this._ctx.bezierCurveTo(cp1x * this._rto, cp1y * this._rto, cp2x * this._rto, cp2y * this._rto, x * this._rto, y * this._rto);
+    }
+
+    public closePath(): void {
+        this._ctx.closePath();
+    }
+
+    public ellipse(x: number, y: number, radiusX: number, radiusY: number, rotation: number, startAngle: number, endAngle: number, anticlockwise?: boolean | undefined): void {
+        this._ctx.ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle, anticlockwise);
+    }
+
+    public lineTo(x: number, y: number): void {
+        this._ctx.lineTo(x * this._rto, y * this._rto);
+    }
+
+    public moveTo(x: number, y: number): void {
+        this._ctx.moveTo(x * this._rto, y * this._rto);
+    }
+
+    public quadraticCurveTo(cpx: number, cpy: number, x: number, y: number): void {
+        this._ctx.quadraticCurveTo(cpx * this._rto, cpy * this._rto, x * this._rto, y * this._rto);
+    }
+
+    public rect(x: number, y: number, w: number, h: number): void {
+        this._ctx.rect(x * this._rto, y * this._rto, w * this._rto, h * this._rto);
+    }
+
+    private _drawImage(
+        image: CanvasImageSource,
+        sx: number,
+        sy: number,
+        sw?: number,
+        sh?: number,
+        dx?: number,
+        dy?: number,
+        dw?: number,
+        dh?: number,
+    ): void {
+        if(sw === undefined) {
+            this._ctx.drawImage(image, sx, sy);
+        } else if (dx === undefined) {
+            this._ctx.drawImage(image, sx, sy, sw, sh as number);
+        } else {
+            this._ctx.drawImage(image, sx, sy, sw, sh as number, dx, dy as number, dw as number, dh as number);
+        }
+    }
+
+    private _drawImagePatchedSourceAndDest(
+        image: CanvasImageSource, 
+        sx: number, 
+        sy: number, 
+        sw?: number,
+        sh?: number,
+        dx?: number,
+        dy?: number,
+        dw?: number,
+        dh?: number,
+    ): void {
+        this._drawImage(
+            image,
+            sx * this._rto,
+            sy * this._rto,
+            sw === undefined ? sw : sw * this._rto,
+            sh === undefined ? sh : sh * this._rto,
+            dx === undefined ? dx : dx * this._rto,
+            dy === undefined ? dy : dy * this._rto,
+            dw === undefined ? dw : dw * this._rto,
+            dh === undefined ? dh : dh * this._rto,
+        );
+    }
+
+    private _drawImagePatchedSource(
+        image: CanvasImageSource, 
+        sx: number, 
+        sy: number, 
+        sw?: number, 
+        sh?: number, 
+        dx?: number, 
+        dy?: number, 
+        dw?: number, 
+        dh?: number
+    ) {
+        // if it is 'long version' of drawImage
+        // https://developer.mozilla.org/en/docs/Web/API/CanvasRenderingContext2D/drawImage
+        if(dx !== undefined) {
+            // then correct width and height of source image
+ 			// IE and Edge throw InvalidStateError if value is greater than width or height
+ 			if('width' in image) {
+                sw = Math.min(image.width as number, Math.max(1, sw as number));
+            }
+
+            if('height' in image) {
+                sh = Math.min(image.height as number, Math.max(1, sh as number));
+            }
+        } 
+
+        this._drawImage(
+            image,
+            sx * this._rto,
+            sy * this._rto,
+            sw === undefined ? sw : sw * this._rto,
+            sh === undefined ? sh : sh * this._rto,
+            dx === undefined ? dx : dx * this._rto,
+            dy === undefined ? dy : dy * this._rto,
+            dw === undefined ? dw : dw * this._rto,
+            dh === undefined ? dh : dh * this._rto,
+        );
     }
 }
 
