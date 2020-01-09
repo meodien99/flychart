@@ -33,11 +33,11 @@
 		"stripInternal": true,
 		"target": "es5",
 		"typeRoots": [
-			// "./src/typings",
+			"./src/types",
 			"node_modules/@types"
 		],
 		"types": [
-			// "_global-types"
+			"_global-types"
 		]
 	}
 }
