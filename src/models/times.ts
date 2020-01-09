@@ -1,4 +1,4 @@
-import { Nominal } from "../types/nominal";
+import { Nominal } from "../helpers/nominal";
 import { Coordinate } from "./Coordinate";
 
 export type UTCTimestamp = Nominal<number, 'UTCTimestamp'>;

@@ -1,4 +1,4 @@
-import { RedColor, GreenColor, BlueColor, AlphaColor, Rgb, Rgba } from "../types/color";
+import { RedColor, GreenColor, BlueColor, AlphaColor, Rgb, Rgba } from "./color";
 
 //https://www.color-hex.com/color
 const namedColorRgbHexStrings = {

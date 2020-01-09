@@ -5,6 +5,6 @@
     },
     "references": [],
     "include": [
-        "./**/*.ts"
+        "./**/*.ts",
     ]
 }

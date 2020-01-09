@@ -1,3 +1,3 @@
-import {Nominal} from '../types/nominal';
+import {Nominal} from '../helpers/nominal';
 
 export type Coordinate = Nominal<number, 'Coordinate'>;
