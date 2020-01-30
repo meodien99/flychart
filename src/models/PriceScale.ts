@@ -356,7 +356,7 @@ export class PriceScale {
         }
     }
 
-    public barPricesToCoordinates<T extends BarPrices & BarCoordinates>(pricesList: T[], baseValue: number, visibleRange?: SeriesItemsIndexedRange): void {
+    public barPricesToCoordinates<T extends BarPrices & BarCoordinates>(pricesList: T[], baseValue: number, visibleRange?: SeriesItemsIndexesRange): void {
         this._makeSureItIsValid();
 
         const bh = this.bottomMargin() * this.height();
