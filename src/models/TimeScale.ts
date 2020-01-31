@@ -1,6 +1,6 @@
 import { Coordinate } from "./Coordinate";
 import { ChartModel } from "./Chart";
-import { TimePointIndex, TimePoint, TickMark, TimedValue } from "./times";
+import { TimePointIndex, TimePoint, TickMark, TimedValue, SeriesItemsIndexesRange } from "./times";
 import { Delegate } from "../helpers/delegate";
 import { LabelCache } from "./FormattedLabelCache";
 import { BarsRange } from './BarsRange';
@@ -140,7 +140,7 @@ export class TimeScale {
         this._visibleBarsInvalidated = true;
         this._rightOffset = offset;
         this._correctOffset();
-        this._model.recalculatedAllPanes();
+        this._model.recalculateAllPanes();
         this._model.lightUpdate();
     }
 
@@ -549,6 +549,16 @@ export class TimeScale {
         return this._options.fixedLeftEdge;
     }
 
+    public reset(): void {
+        this._visibleBarsInvalidated = true;
+        this._points = new TimePoints();
+        this._scrollStartPoint = null;
+        this._scaleStartPoint = null;
+        this._clearCommonTransitionsStartState();
+        this._tickMarks.reset();
+        this._leftEdgeIndex = null;
+    }
+    
     private _rightOffsetForCoordinate(x: Coordinate): number {
         return (this._width + 1 - x)/this._barSpacing;
     }
