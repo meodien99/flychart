@@ -55,6 +55,10 @@ export class SeriesData {
         this._bars.each(func);
     }
 
+    public clear(): void {
+        this._bars.clear();
+    }
+
     public isEmpty(): boolean {
         return this._bars.isEmpty();
     }

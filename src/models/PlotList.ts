@@ -59,6 +59,16 @@ export class PlotList<TimeType, PlotValueTuple extends PlotValue[] = PlotValue[]
         return this._rows.length;
     }
 
+    public clear(): void {
+        this._rows = [];
+ 		this._start = 0;
+ 		this._end = 0;
+ 		this._shareRead = false;
+ 		this._minMaxCache.clear();
+ 		this._rowSearchCache.clear();
+ 		this._rowSearchCacheWithoutEmptyValues.clear();
+    }
+
     public first(): PlotRow<TimeType, PlotValueTuple> | null {
         return this.size() > 0 ? this._rows[this._start as PlotRowIndex] : null;
     }   
