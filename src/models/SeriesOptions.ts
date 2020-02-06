@@ -121,4 +121,4 @@ export interface HistogramSeriesOptions extends SeriesOptionsBase {
     histogramStyle: HistogramStyleOptions
 }
 
-export type SeriesOptions = CandleStyleOptions & BarSeriesOptions & LineSeriesOptions & AreaSeriesOptions & HistogramSeriesOptions;
+export type SeriesOptions = CandleSeriesOptions & BarSeriesOptions & LineSeriesOptions & AreaSeriesOptions & HistogramSeriesOptions;
