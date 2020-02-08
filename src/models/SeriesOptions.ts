@@ -60,7 +60,7 @@ export type HistogramStyleOptions = {
 
 export type PriceFormat = {
     type: 'price' | 'volume' | 'percent';
-    percision: number;
+    precision: number;
     minMove: number;
 }
 

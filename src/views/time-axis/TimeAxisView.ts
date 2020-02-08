@@ -1,4 +1,5 @@
 import { rgbToBlackWhiteString, parseRgb } from "../../helpers/colors";
+import { TimeAxisViewRenderer } from "../../renderers/TimeAxisViewRenderer";
 
 export abstract class TimeAxisView {
     protected _text: string = '';
