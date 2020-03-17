@@ -8,11 +8,11 @@ export class Palette {
         this._index2Color.set(index, color);
     }
 
-    public colorByIndex(index: number): string {
+    public colorByIndex(index: number): string | undefined {
         return this._index2Color.get(index);
     }
 
-    public indexByColor(color: string): number {
+    public indexByColor(color: string): number | undefined {
         return this._color2Index.get(color);
     }
 

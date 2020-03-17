@@ -1,5 +1,5 @@
 import { Series } from "./Series";
-import { TimePointIndex, TimePoint } from "./times";
+import { TimePointIndex, TimePoint } from "./time-data";
 import { ensureNotNull, ensure } from "../helpers/assertions";
 import { Bar } from "./bar";
 import { PlotList } from "./PlotList";
@@ -107,7 +107,9 @@ export class SeriesBarColorer {
         const color = currentBar.value[SeriesPlotIndex.Color];
         if(color !== undefined && color !== null) {
             const palette = ensureNotNull<Palette>(this._series.palette());
-            result.barColor = palette.colorByIndex(color);
+            const c = palette.colorByIndex(color);
+            if(c !== undefined)
+                result.barColor = c;
         } else {
             result.barColor = this._series.options().histogramStyle.color;
         }

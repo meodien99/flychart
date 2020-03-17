@@ -1,5 +1,5 @@
 import { CrossHairOptions, CrossHairMode } from "./CrossHair";
-import { TimePointIndex } from "./times";
+import { TimePointIndex } from "./time-data";
 import { Pane } from "./Pane";
 import { Series } from "./Series";
 import { IDataSource } from "./idata-source";

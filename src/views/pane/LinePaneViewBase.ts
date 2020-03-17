@@ -1,5 +1,5 @@
 import { PricedValue, PriceScale } from "../../models/PriceScale";
-import { TimedValue, TimePointIndex } from "../../models/times";
+import { TimedValue, TimePointIndex } from "../../models/time-data";
 import { SeriesPaneViewBase } from "./SeriesPaneViewBase";
 import { ChartModel } from "../../models/Chart";
 import { Series } from "../../models/Series";

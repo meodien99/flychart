@@ -1,7 +1,7 @@
 import { IDestroyable } from '../helpers/idestroyable';
 import { ChartModel } from './Chart';
 import { TimeScale } from './TimeScale';
-import { PriceScale, sortSources, PriceScaleMode, PriceScaleState } from './PriceScale';
+import { PriceScale, sortSources, PriceScaleState } from './PriceScale';
 import { IDataSource } from './idata-source';
 import { IPriceDataSource } from './iprice-data-source';
 import { Delegate } from '../helpers/delegate';
@@ -232,7 +232,10 @@ export class Pane implements IDestroyable {
         return this._mainDataSource;
     }
 
-    public recalculatePriceScale(priceScale: PriceScale): void {
+    public recalculatePriceScale(priceScale: PriceScale | null): void {
+        if(priceScale === null)
+            return;
+            
         const visibleBars = this._timeScale.visibleBars();
 
         priceScale.setMode({autoScale: true});

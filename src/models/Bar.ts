@@ -1,7 +1,7 @@
 import { Nominal } from "../helpers/nominal";
 
 import { Coordinate } from "./Coordinate";
-import { TimePoint } from './times';
+import { TimePoint } from "./time-data";
 import { PlotValue } from './plot-data';
 import { SeriesPlotIndex } from "./SeriesData";
 

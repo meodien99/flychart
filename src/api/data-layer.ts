@@ -1,7 +1,7 @@
-import { TimePoint, TimePointIndex } from "../models/times";
 import { PlotRow } from "../models/plot-data";
 import { Bar } from "../models/bar";
 import { Series } from "../models/Series";
+import { TimePoint, TimePointIndex } from "../models/time-data";
 
 export interface TickMarkPacket {
     span: number;

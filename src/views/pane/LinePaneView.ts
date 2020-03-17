@@ -2,7 +2,7 @@ import { LinePaneViewBase } from "./LinePaneViewBase";
 import { Series } from "../../models/Series";
 import { ChartModel } from "../../models/Chart";
 import { IPaneRenderer } from "../../renderers/ipane-renderer";
-import { TimePointIndex } from "../../models/times";
+import { TimePointIndex } from "../../models/time-data";
 import { BarPrice } from "../../models/bar";
 import { PaneRendererLine, LineItem, PaneRendererLineData } from "../../renderers/PaneRendererLine";
 

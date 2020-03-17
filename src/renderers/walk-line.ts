@@ -1,5 +1,5 @@
 import { LinePoint, LineType } from "./draw-line-renderer";
-import { SeriesItemsIndexesRange } from "../models/times";
+import { SeriesItemsIndexesRange } from "../models/time-data";
 
 export function walkLine(ctx:CanvasRenderingContext2D, points: ReadonlyArray<LinePoint>, lineType: LineType, visibleRange: SeriesItemsIndexesRange): void {
     if(points.length === 0)

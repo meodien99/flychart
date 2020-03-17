@@ -1,5 +1,5 @@
 import { PlotValue, PlotRow } from "./plot-data";
-import { TimePointIndex, TimePoint } from "./times";
+import { TimePointIndex } from "./time-data";
 import { Nominal } from "../helpers/nominal";
 import { lowerbound, upperbound } from '../helpers/binary-search';
 import { ensureNotNull, assert } from "../helpers/assertions";

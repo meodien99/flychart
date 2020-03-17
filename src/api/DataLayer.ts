@@ -1,7 +1,7 @@
 import { isString } from "../helpers/strict-type-checkers";
 import { SeriesUpdatePacket, UpdatePacket, TimeScaleUpdatePacket, TickMarkPacket } from "./data-layer";
 import { TimedData, stringToBusinessDay, isBusinessDay, businessDayConverter, timestampConverter, Time, isUTCTimestamp } from "./timed-data";
-import { UTCTimestamp, TimePointIndex, TimePoint } from "../models/times";
+import { UTCTimestamp, TimePointIndex, TimePoint } from "../models/time-data";
 import { Series } from "../models/Series";
 import { Palette } from "../models/Palette";
 import { ensureDefined, ensureNotNull } from "../helpers/assertions";
@@ -182,7 +182,7 @@ export class DataLayer {
         const bars = series.data().bars();
 
         if(bars.size() > 0) {
-            const lastTime = ensureNotNull(bars.last()).time;
+            const lastTime = ensureNotNull<PlotRow<any, any>>(bars.last()).time;
             if(lastTime.businessDay !== undefined) {
                 // time must be BusinessDay
                 if(!isBusinessDay(data.time)) {

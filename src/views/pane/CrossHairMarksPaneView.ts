@@ -1,6 +1,6 @@
 import { ChartOptions, ChartModel } from "../../models/Chart";
 import { Coordinate } from "../../models/Coordinate";
-import { TimePointIndex, SeriesItemsIndexesRange } from "../../models/times";
+import { TimePointIndex, SeriesItemsIndexesRange } from "../../models/time-data";
 import { BarPrice } from "../../models/bar";
 import { MarksRendererData, PaneMarksRenderer } from "../../renderers/PaneMarksRenderer";
 import { IUpdatablePaneView, UpdateType } from "./iupdatable-pane-view";

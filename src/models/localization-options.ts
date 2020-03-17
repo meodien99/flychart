@@ -1,5 +1,5 @@
 import { DateFormat } from "../formatters/date-format";
-import { BusinessDay, UTCTimestamp } from "./times";
+import { BusinessDay, UTCTimestamp } from "./time-data";
 import { BarPrice } from "./bar";
 
 export type TimeFormatterFn = (time: BusinessDay | UTCTimestamp) => string;

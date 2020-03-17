@@ -53,13 +53,13 @@ function getConfig(inputFile, type, isProd) {
 
 const configs = [
 	getConfig('./lib/src/index.js', 'module', false),
-	// getConfig('./lib/src/standalone.js', 'standalone', false),
+	getConfig('./lib/src/standalone.js', 'standalone', false),
 ];
 
 if (process.env.NODE_ENV === 'production') {
 	configs.push(
 		getConfig('./lib/src/index.js', 'module', true),
-		// getConfig('./lib/src/standalone.js', 'standalone', true),
+		getConfig('./lib/src/standalone.js', 'standalone', true),
 	);
 }
 

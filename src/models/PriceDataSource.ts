@@ -1,7 +1,7 @@
 import { IPriceDataSource } from "./iprice-data-source";
 import { DataSource } from "./DataSource";
 import { ChartModel } from "./Chart";
-import { TimePointIndex } from "./times";
+import { TimePointIndex } from "./time-data";
 import { PriceRange } from "./PriceRange";
 import { IFormatter } from "../formatters/iformatter";
 

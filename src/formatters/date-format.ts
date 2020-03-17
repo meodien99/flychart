@@ -6,7 +6,7 @@ const getYear = (date: Date) => date.getUTCFullYear();
 
 const dd = (date: Date) => numberToStringWithLeadingZero(getDay(date), 2);
 
-const MMM: DateFormatFn = (date: Date, locale: string) => new Date(getYear(date), date.getUTCMonth(), 1).toLocaleString(locale, {month: 'short'});
+const MMM: DateFormatFn = (date: Date, locale?: string) => new Date(getYear(date), date.getUTCMonth(), 1).toLocaleString(locale, {month: 'short'});
 const MM = (date: Date) => numberToStringWithLeadingZero(getMonth(date), 2);
 
 const yy = (date: Date) => numberToStringWithLeadingZero(getYear(date) % 100, 2);
@@ -29,7 +29,7 @@ export type DateFormat =
 export type DateFormatFn = (date: Date, locale?: string) => string; 
 
 export const dateFormatFunctions: Record<DateFormat, DateFormatFn> = {
-    'dd MMM \'yy': (date: Date, locale: string) => `${dd(date)} ${MMM(date, locale)} \'${yy(date)}`,
+    'dd MMM \'yy': (date: Date, locale?: string) => `${dd(date)} ${MMM(date, locale)} \'${yy(date)}`,
     'yyyy-MM-dd': (date: Date) => `${yyyy(date)}-${MM(date)}-${dd(date)}`,
     'yy-MM-dd': (date: Date) => `${yy(date)}-${MM(date)}-${dd(date)}`,
     'yy/MM/dd': (date: Date) => `${yy(date)}/${MM(date)}/${dd(date)}`,

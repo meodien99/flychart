@@ -1,6 +1,5 @@
-import { UTCTimestamp, BusinessDay, TimePoint, TimePointIndex } from "../models/times";
-import { Series } from "../models/Series";
-import { isNumber } from "util";
+import { UTCTimestamp, BusinessDay, TimePoint } from "../models/time-data";
+import { isNumber } from '../helpers/strict-type-checkers';
 
 export type Time = UTCTimestamp | BusinessDay | string;
 

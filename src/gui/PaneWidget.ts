@@ -6,13 +6,13 @@ import { Pane } from "../models/Pane";
 import { Point } from "../models/Point";
 import { PriceAxisPosition } from "../models/PriceScale";
 import { Delegate } from "../helpers/delegate";
-import { TimePointIndex } from "../models/times";
+import { TimePointIndex } from "../models/time-data";
 import { ensureNotNull } from "../helpers/assertions";
 import { Coordinate } from "../models/Coordinate";
 import { ISubscription } from "../helpers/isubscription";
 import { InvalidateLevel } from "../models/InvalidateMask";
 import { colorWithTransparency } from "../helpers/colors";
-import { DEFAULT_FONT_FAMILY } from "../helpers/make-font";
+// import { DEFAULT_FONT_FAMILY } from "../helpers/make-font";
 import { resizeCanvas, Size, addCanvasTo, clearRect } from "./canvas-utils";
 import { getContext2d } from "../helpers/canvas-wrapper";
 import { mobileTouch } from "./touch";
@@ -650,7 +650,7 @@ export class PaneWidget implements IDestroyable {
         this._priceAxisPosition = axisPosition;
     }
 
-    private _createLogoElement(): void {
-        //@TODO create own logo
-    }
+    // private _createLogoElement(): void {
+    //     //@TODO create own logo
+    // }
 }

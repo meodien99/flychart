@@ -1,5 +1,5 @@
 import {barFunctions, Bar, BarFunction} from './bar';
-import { TimePoint, TimePointIndex } from './times';
+import { TimePoint, TimePointIndex } from "./time-data";
 import { PlotList, PlotFunctionMap, EnumeratingFunction, PlotRowSearchMode } from './PlotList';
 import { PlotRow } from './plot-data';
 

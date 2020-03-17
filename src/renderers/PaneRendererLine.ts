@@ -1,4 +1,4 @@
-import { TimedValue, SeriesItemsIndexesRange } from "../models/times";
+import { TimedValue, SeriesItemsIndexesRange } from "../models/time-data";
 import { PricedValue } from "../models/PriceScale";
 import { LinePoint, LineType, LineWidth, LineStyle, setLineStyle } from "./draw-line-renderer";
 import { IPaneRenderer } from "./ipane-renderer";

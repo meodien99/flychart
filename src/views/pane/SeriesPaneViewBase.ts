@@ -1,4 +1,4 @@
-import { TimedValue, SeriesItemsIndexesRange, visibleTimedValue } from "../../models/times";
+import { TimedValue, SeriesItemsIndexesRange, visibleTimedValue } from "../../models/time-data";
 import { IUpdatablePaneView, UpdateType } from "./iupdatable-pane-view";
 import { Series } from "../../models/Series";
 import { ChartModel } from "../../models/Chart";

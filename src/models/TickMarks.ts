@@ -1,4 +1,4 @@
-import { TickMark, TimePoint } from "./times";
+import { TickMark, TimePoint } from "./time-data";
 import { Delegate } from "../helpers/delegate";
 import { ensureDefined } from "../helpers/assertions";
 
@@ -16,7 +16,7 @@ export class TickMarks {
     // Sparse array with ordered arrays of tick marks
     private _markBySpan: (TickMark[] | undefined)[] = [];
     private _changed: Delegate = new Delegate();
-    private _cache?: TickMark[] = null;
+    private _cache?: TickMark[] | null = null;
     private _maxBar: number = NaN;
 
     public reset(): void {

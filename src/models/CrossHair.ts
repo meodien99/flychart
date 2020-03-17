@@ -1,5 +1,5 @@
 import { Coordinate } from "./Coordinate";
-import { TimePoint, TimePointIndex } from "./times";
+import { TimePoint, TimePointIndex } from "./time-data";
 import { PriceScale } from "./PriceScale";
 import { LineWidth, LineStyle } from "../renderers/draw-line-renderer";
 import { BarPrice } from "./bar";

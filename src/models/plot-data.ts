@@ -1,4 +1,4 @@
-import { TimePointIndex } from "./times";
+import { TimePointIndex } from "./time-data";
 
 export type PlotValue = number | null | undefined;
 

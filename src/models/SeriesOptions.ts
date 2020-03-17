@@ -7,6 +7,7 @@ export interface CandleStyleOptions {
     upColor: string;
     downColor: string;
     wickVisible: boolean;
+    borderVisible: boolean;
     borderColor: string;
     borderUpColor: string;
     borderDownColor: string;

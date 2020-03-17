@@ -1,13 +1,14 @@
-import { TimePointIndex } from "./times";
-import {assert} from '../helpers/assertions';
+import { assert } from '../helpers/assertions';
+
+import { TimePointIndex } from "./time-data";
 
 export class BarsRange {
     private readonly _firstBar: TimePointIndex;
     private readonly _lastBar: TimePointIndex;
 
     public constructor(firstBar: TimePointIndex, lastBar: TimePointIndex) {
-        assert(firstBar <= lastBar, 'The last bar in the bars range must be greater than or equal the first bar')
-        
+        assert(firstBar <= lastBar, 'The last bar in the bars range should be greater than or equal to the first bar');
+
         this._firstBar = firstBar;
         this._lastBar = lastBar;
     }

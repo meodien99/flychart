@@ -1,6 +1,6 @@
 import { Coordinate } from "./Coordinate";
 import { ChartModel } from "./Chart";
-import { TimePointIndex, TimePoint, TickMark, TimedValue, SeriesItemsIndexesRange } from "./times";
+import { TimePointIndex, TimePoint, TickMark, TimedValue, SeriesItemsIndexesRange } from "./time-data";
 import { Delegate } from "../helpers/delegate";
 import { LabelCache } from "./FormattedLabelCache";
 import { BarsRange } from './BarsRange';
@@ -10,7 +10,7 @@ import { DateFormatter } from "../formatters/DateFormatter";
 import { DateTimeFormatter } from "../formatters/DateTimeFormatter";
 import { LocalizationOptions } from "./localization-options";
 import { DeepPartial, merge, isInteger } from "../helpers/strict-type-checkers";
-import { ensureNotNull, ensure } from "../helpers/assertions";
+import { ensureNotNull } from "../helpers/assertions";
 import { ISubscription } from "../helpers/isubscription";
 import { clamp } from '../helpers/math'; 
 
@@ -45,7 +45,7 @@ export type TimeMark = {
 export type TimeScaleOptions = {
     rightOffset: number,
     barSpacing: number,
-    fixedLeftEdge: boolean,
+    fixLeftEdge: boolean,
     lockVisibleTimeRangeOnResize: boolean,
     rightBarStaysOnScroll: boolean,
     borderVisible: boolean,
@@ -62,27 +62,27 @@ export class TimeScale {
 
     private _dateTimeFormatter!: DateFormatter | DateTimeFormatter;
     private _width: number = 0;
-    private _baseIndexOrNull?: TimePointIndex = null;
+    private _baseIndexOrNull: TimePointIndex | null = null;
     private _rightOffset: number;
     private _points: TimePoints = new TimePoints();
     
     private readonly _barSpacingChanged: Delegate<number, number> = new Delegate();
     private _barSpacing: number;
-    private _scrollStartPoint?: Coordinate = null;
-    private _scaleStartPoint?: Coordinate = null;
+    private _scrollStartPoint: Coordinate | null = null;
+    private _scaleStartPoint: Coordinate | null = null;
 
     private readonly _tickMarks: TickMarks = new TickMarks();
     private _formattedBySpan: Map<number, LabelCache> = new Map();
     
-    private _visibleBars?: BarsRange = null;
+    private _visibleBars: BarsRange | null = null;
     private _visibleBarsInvalidated: boolean = true;
 
     private readonly _visibleBarsChanged: Delegate = new Delegate();
     private readonly _optionsApplied: Delegate = new Delegate();
 
-    private _leftEdgeIndex?: TimePointIndex = null;
-    private _commonTransitionStartState?: TransitionState = null;
-    private _timeMarksCache?: TimeMark[] = null;
+    private _leftEdgeIndex: TimePointIndex | null = null;
+    private _commonTransitionStartState: TransitionState | null = null;
+    private _timeMarksCache: TimeMark[] | null = null;
 
     private _labels: TimeMark[] = [];
 
@@ -112,7 +112,7 @@ export class TimeScale {
     public applyOptions(options: DeepPartial<TimeScaleOptions>, localizationOptions?: DeepPartial<LocalizationOptions>): void {
         merge(this._options, options);
 
-        if(this._options.fixedLeftEdge) {
+        if(this._options.fixLeftEdge) {
             const firstIndex = this._points.firstIndex();
 
             if(firstIndex !== null) {
@@ -381,7 +381,7 @@ export class TimeScale {
     }
 
     public scaleTo(x: Coordinate): void {
-        if(this._commonTransitionStartState === null) {
+        if(this._commonTransitionStartState === null || this._commonTransitionStartState === undefined) {
             return;
         }
 
@@ -517,7 +517,7 @@ export class TimeScale {
     }
 
     public setVisibleRange(range: BarsRange): void {
-        const len = range.lastBar() - range.firstBar();
+        // const len = range.lastBar() - range.firstBar();
         this._barSpacing = this._width/length;
         this._rightOffset = range.lastBar() - this.baseIndex();
         this._correctOffset();
@@ -546,7 +546,7 @@ export class TimeScale {
     }
 
     public fixLeftEdge(): boolean {
-        return this._options.fixedLeftEdge;
+        return this._options.fixLeftEdge;
     }
 
     public reset(): void {
@@ -679,7 +679,7 @@ export class TimeScale {
     }
 
     private _clearCommonTransitionsStartState(): void {
-        this._clearCommonTransitionsStartState = null;
+        this._commonTransitionStartState = null;
     }
 
     private _saveCommonTransitionsStartState(): void {

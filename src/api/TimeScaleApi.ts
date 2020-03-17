@@ -1,6 +1,6 @@
 import { TimeScaleOptions, TimeScale } from "../models/TimeScale";
 import { clone, DeepPartial } from "../helpers/strict-type-checkers";
-import { TimePoint, UTCTimestamp, TimePointIndex } from "../models/times";
+import { TimePoint, UTCTimestamp, TimePointIndex } from "../models/time-data";
 import { Time, convertTime } from "./timed-data";
 import { BarsRange } from "../models/BarsRange";
 import { ensureNotNull } from "../helpers/assertions";

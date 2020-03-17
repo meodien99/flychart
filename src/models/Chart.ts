@@ -9,14 +9,14 @@ import { PriceAxisRendererOptionsProvider } from '../renderers/price-axis-render
 import { InvalidateMask, InvalidateLevel } from './InvalidateMask';
 import { WatermarkOptions, Watermark } from "./Watermark";
 import { LayoutOptions } from "./LayoutOptions";
-import { PriceScaleOptions, PriceScaleMargins, PriceScale, PriceScaleMode } from "./PriceScale";
+import { PriceScaleOptions, PriceScaleMargins, PriceScale } from "./PriceScale";
 import { TimeScaleOptions, TimeScale } from "./TimeScale";
 import { CrossHairOptions, CrossHair } from "./CrossHair";
 import { Point } from './Point';
 import { LocalizationOptions } from "./localization-options";
 import { Series } from "./Series";
 import { IDataSource } from "./idata-source";
-import { TimePointIndex, TimePoint, TickMark } from "./times";
+import { TimePointIndex, TimePoint, TickMark } from "./time-data";
 import { DEFAULT_STRETCH_FACTOR, Pane } from "./Pane";
 import { Magnet } from "./Magnet";
 import { Grid, GridOptions } from "./Grid";
@@ -109,7 +109,7 @@ export class ChartModel implements IDestroyable {
         this._invalidate(inv);
     }
 
-    public hoveredSource(): IDataSource {
+    public hoveredSource(): IDataSource | null {
         return this._hoveredSource;
     }
 

@@ -1,4 +1,4 @@
-import { TimePoint, TimePointIndex, UTCTimestamp } from "./times";
+import { TimePoint, TimePointIndex, UTCTimestamp } from "./time-data";
 
 export class TimePoints {
     private _items: TimePoint[] = [];
@@ -11,11 +11,11 @@ export class TimePoints {
         return this._items.length;
     }
 
-    public firstIndex(): TimePointIndex {
+    public firstIndex(): TimePointIndex | null {
         return this._offsetToIndex(0); 
     }
 
-    public lastIndex(): TimePointIndex {
+    public lastIndex(): TimePointIndex | null {
         return this._offsetToIndex(this._items.length - 1);
     }
 

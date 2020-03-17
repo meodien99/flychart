@@ -1,6 +1,6 @@
 import { DeepPartial } from "../helpers/strict-type-checkers";
 import { LineSeriesParams, ILineSeriesApi } from "./iline-series-api";
-import { UTCTimestamp, BusinessDay } from "../models/times";
+import { UTCTimestamp, BusinessDay } from "../models/time-data";
 import { Point } from "../models/Point";
 import { ISeriesApi } from "./iseries-api";
 import { TimeRange, ITimeScaleApi } from "./itime-scale-api";

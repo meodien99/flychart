@@ -10,14 +10,14 @@ import { IDataSource } from "./idata-source";
 import { IPriceDataSource } from "./iprice-data-source";
 import { IFormatter } from "../formatters/iformatter";
 import { DeepPartial, merge } from "../helpers/strict-type-checkers";
-import { ensureDefined, ensure, ensureNotNull } from "../helpers/assertions";
+import { ensureDefined, ensureNotNull } from "../helpers/assertions";
 import { ISubscription } from "../helpers/isubscription";
 import { canConvertPriceRangeFromLog, convertPriceRangeFromLog, convertPriceRangeToLog, toPercent, toIndexedTo100, fromPercent, fromIndexedTo100, toLog, fromLog, toPercentRange, toIndexedTo100Range } from "./price-scale-helpers";
 import { PriceDataSource } from "./PriceDataSource";
 import { PriceTickMarkBuilder } from "./PriceTickMarkBuilder";
 import { Series } from "./Series";
 import { LayoutOptions } from "./LayoutOptions";
-import { SeriesItemsIndexesRange } from "./times";
+import { SeriesItemsIndexesRange } from "./time-data";
 
 export const enum PriceScaleMode {
     Normal,

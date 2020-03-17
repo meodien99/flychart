@@ -1,6 +1,6 @@
 import { IPaneRenderer } from "./ipane-renderer";
 import { LineItem } from "./PaneRendererLine";
-import { SeriesItemsIndexesRange } from "../models/times";
+import { SeriesItemsIndexesRange } from "../models/time-data";
 
 export interface MarksRendererData {
     items: LineItem[];

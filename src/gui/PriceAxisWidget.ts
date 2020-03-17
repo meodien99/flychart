@@ -42,7 +42,7 @@ export class PriceAxisWidget implements IDestroyable {
 	private readonly _topCanvas: HTMLCanvasElement;
 	private readonly _topCtx: CanvasRenderingContext2D;
 
-	private _updateTimeout: NodeJS.Timeout | number | null = null;
+	private _updateTimeout: number | null = null;
 	private _mouseEventHandler: MouseEventHandler;
 	private _mousedown: boolean = false;
 
@@ -615,7 +615,7 @@ export class PriceAxisWidget implements IDestroyable {
 			const chart = this._pane.chart();
 
 			if (this._updateTimeout === null) {
-				this._updateTimeout = setTimeout(
+				this._updateTimeout = window.setTimeout(
 					() => {
 						if (chart) {
 							chart.model().fullUpdate();

@@ -1,5 +1,5 @@
 import { Coordinate } from "./Coordinate";
-import { TimePointIndex } from "./times";
+import { TimePointIndex } from "./time-data";
 import { BarPrice, BarFunction, Bar } from "./bar";
 import { PriceDataSource } from "./PriceDataSource";
 import { IDestroyable } from "../helpers/idestroyable";
@@ -312,7 +312,7 @@ export class Series extends PriceDataSource implements IDestroyable {
 
     public nearestData(index: TimePointIndex, options?: PlotRowSearchMode): PlotRow<Bar['time'], Bar['value']> | null {
         if(!isInteger(index))
-            return;
+            return null;
 
         return this.data().search(index, options);
     }
@@ -383,7 +383,7 @@ export class Series extends PriceDataSource implements IDestroyable {
 
     public updateAllViews(): void {
         if(this._paneView === null) 
-            return null;
+            return;
 
         this._paneView.update();
 

@@ -47,5 +47,7 @@
     "verify": "npm-run-all clean tsc-all lint build test",
     "test": "mocha tests/unittests/**/*.spec.ts"
   },
-  "dependencies": {}
+  "dependencies": {
+    "dts-bundle-generator": "^3.3.1"
+  }
 }

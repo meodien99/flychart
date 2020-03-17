@@ -65,7 +65,7 @@ export class MouseEventHandler implements IDestroyable {
  	private _originalPreventDefault: boolean;
  	private _verticalTouchScroll: boolean;
  	private _clickCount: number = 0;
- 	private _clickTimeoutId: NodeJS.Timeout | number | null = null;
+ 	private _clickTimeoutId: number | null = null;
  	private readonly _lastTouchPosition: Position = { x: 0, y: 0 };
  	private _mouseMoveStartPosition: Position | null = null;
  	private _moveExceededManhattanDistance: boolean = false;
@@ -293,7 +293,7 @@ export class MouseEventHandler implements IDestroyable {
 
  		if (!this._clickTimeoutId) {
  			this._clickCount = 0;
- 			this._clickTimeoutId = setTimeout(this._resetClickTimeout.bind(this), Delay.ResetClick);
+ 			this._clickTimeoutId = window.setTimeout(this._resetClickTimeout.bind(this), Delay.ResetClick);
  		}
 
  		this._preventDefaultIfNeeded(downEvent);
