@@ -4,11 +4,11 @@
         "composite": true
     },
     "references": [
-        { "path": "./api" },
-        { "path": "./formatters" },
-        { "path": "./gui" },
+        // { "path": "./api" },
+        // { "path": "./formatters" },
+        // { "path": "./gui" },
         { "path": "./helpers" },
-        // { "path": "./tsconfig.model.json" }
+        { "path": "./tsconfig.model.json" }
     ],
     "include": [
         "./index.ts",
