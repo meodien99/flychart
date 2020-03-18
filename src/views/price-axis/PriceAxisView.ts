@@ -8,9 +8,9 @@ import { PriceAxisViewRenderer } from "../../renderers/PriceAxisViewRenderer";
 
 export abstract class PriceAxisView implements IPriceAxisView {
     private readonly _commonRendererData: PriceAxisViewRendererCommonData = {
-        background: '#000',
-        color: '#fff',
         coordinate: 0 as Coordinate,
+        color: '#FFF',
+        background: '#000',
     };
 
     private readonly _axisRendererData: PriceAxisViewRendererData = {
@@ -18,20 +18,19 @@ export abstract class PriceAxisView implements IPriceAxisView {
         visible: false,
         tickVisible: true,
         borderVisible: true,
-        lineStyle: LineStyle.Dotted
+        lineStyle: LineStyle.Dotted,
     };
 
     private readonly _paneRendererData: PriceAxisViewRendererData = {
         text: '',
- 		visible: false,
- 		tickVisible: false,
- 		borderVisible: false,
- 		lineStyle: LineStyle.Dotted,
+        visible: false,
+        tickVisible: false,
+        borderVisible: false,
+        lineStyle: LineStyle.Dotted,
     };
 
     private readonly _axisRenderer: IPriceAxisViewRenderer;
     private readonly _paneRenderer: IPriceAxisViewRenderer;
-
     private _invalidated: boolean = true;
 
     public constructor(ctor?: IPriceAxisViewRendererConstructor) {
@@ -52,8 +51,8 @@ export abstract class PriceAxisView implements IPriceAxisView {
     }
 
     public generateTextColor(color: string): string {
-        const bwColor = rgbToBlackWhiteString(parseRgb(color), 100);
-        return bwColor === 'black' ? 'white' : 'black';
+        const backColorBW = rgbToBlackWhiteString(parseRgb(color), 160);
+        return backColorBW === 'black' ? 'white' : 'black';
     }
 
     public coordinate(): number {
@@ -64,6 +63,25 @@ export abstract class PriceAxisView implements IPriceAxisView {
     public floatCoordinate(): number {
         this._updateRendererDataIfNeeded();
         return this._commonRendererData.floatCoordinate || this._commonRendererData.coordinate;
+    }
+
+    public update(): void {
+        this._invalidated = true;
+    }
+
+    public height(rendererOptions: PriceAxisViewRendererOptions, useSecondLine: boolean = false): number {
+        return Math.max(
+            this._axisRenderer.height(rendererOptions, useSecondLine),
+            this._paneRenderer.height(rendererOptions, useSecondLine)
+        );
+    }
+
+    public getFixedCoordinate(): number {
+        return this._commonRendererData.fixedCoordinate || 0;
+    }
+
+    public setFixedCoordinate(value: number): void {
+        this._commonRendererData.fixedCoordinate = value as Coordinate;
     }
 
     public isVisible(): boolean {
@@ -79,25 +97,6 @@ export abstract class PriceAxisView implements IPriceAxisView {
     public isPaneLabelVisible(): boolean {
         this._updateRendererDataIfNeeded();
         return this._paneRendererData.visible;
-    }
-
-    public update(): void {
-        this._invalidated = true;
-    }
-
-    public height(rendererOptions: PriceAxisViewRendererOptions, useSecondLine: boolean = false): number {
-        return Math.max(
-            this._axisRenderer.height(rendererOptions, useSecondLine),
-            this._paneRenderer.height(rendererOptions, useSecondLine)
-        );
-    }
-
-    public getFixedCoordinate(): number {
-        return this._commonRendererData.fixedCoordinate || 0; 
-    }
-
-    public setFixedCoordinate(value: number): void {
-        this._commonRendererData.fixedCoordinate = value as Coordinate;
     }
 
     public renderer(): IPriceAxisViewRenderer {
@@ -119,7 +118,7 @@ export abstract class PriceAxisView implements IPriceAxisView {
     protected abstract _updateRendererData(
         axisRendererData: PriceAxisViewRendererData,
         paneRendererData: PriceAxisViewRendererData,
-        commonRendererData: PriceAxisViewRendererCommonData
+        commonData: PriceAxisViewRendererCommonData
     ): void;
 
     private _updateRendererDataIfNeeded(): void {

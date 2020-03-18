@@ -43,7 +43,7 @@ function upperBoundItemsCompare(time: TimePointIndex, item: TimedValue): boolean
     return time < item.time;
 }
 
-export function visibleTimedValue(items: TimedValue[], range: BarsRange): SeriesItemsIndexesRange {
+export function visibleTimedValues(items: TimedValue[], range: BarsRange): SeriesItemsIndexesRange {
     const from = lowerbound<TimedValue, TimePointIndex>(items, range.firstBar(), lowerBoundItemsCompare);
     const to = upperbound<TimedValue, TimePointIndex>(items, range.lastBar(), upperBoundItemsCompare);
 

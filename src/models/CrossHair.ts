@@ -200,7 +200,7 @@ export class CrossHair extends DataSource {
         return this._pane !== null ? [this._paneView, this._markersPaneView] : []
     }
 
-    public horizLineVisible(pane: Pane): boolean {
+    public horzLineVisible(pane: Pane): boolean {
         return pane === this._pane && this._options.horzLine.visible;
     }
 

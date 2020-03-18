@@ -53,7 +53,7 @@ export interface LastValueDataResultWithRawPrice extends LastValueDataResultWith
 
 export type LastValueDataResultWithoutRawPrice = LastValueDataResultWithoutData | LastValueDataResultWithData;
 
-export interface MarketData {
+export interface MarkerData {
     price: BarPrice;
     radius: number;
 }
@@ -63,15 +63,12 @@ export class Series extends PriceDataSource implements IDestroyable {
     private _data: SeriesData = new SeriesData();
     private readonly _priceAxisViews: IPriceAxisView[];
     private readonly _panePriceAxisView: PanePriceAxisView;
-
     private _formatter!: IFormatter;
     private readonly _priceLineView: SeriesPriceLinePaneView = new SeriesPriceLinePaneView(this);
     private readonly _baseHorizontalLineView: SeriesHorizontalBaseLinePaneView = new SeriesHorizontalBaseLinePaneView(this);
-
     private _endOfData: boolean = false;
     private _paneView: IUpdatablePaneView | null = null;
     private _barColorerCache: SeriesBarColorer | null = null;
-
     private readonly _options: SeriesOptions;
     private _barFunction: BarFunction;
     private _palette: Palette = new Palette();
@@ -79,25 +76,24 @@ export class Series extends PriceDataSource implements IDestroyable {
 
     public constructor(model: ChartModel, options: SeriesOptions, seriesType: SeriesType, title: string) {
         super(model);
-
         this._options = options;
         this._seriesType = seriesType;
         this._title = title;
 
         this.createPaneView();
 
-        const priceAxisView = new SeriesPriceAxisView(this, {model});
+        const priceAxisView = new SeriesPriceAxisView(this, { model: model });
         this._priceAxisViews = [priceAxisView];
 
         this._panePriceAxisView = new PanePriceAxisView(priceAxisView, this, model);
 
         this._recreateFormatter();
         this._updateBarFunction();
-
-        this._barFunction = this.barFunction(); // undefined
+        this._barFunction = this.barFunction(); // redundant
     }
 
-    public destroy(): void {}
+    public destroy(): void {
+    }
 
     public endOfData(): boolean {
         return this._endOfData;
@@ -109,31 +105,30 @@ export class Series extends PriceDataSource implements IDestroyable {
 
     public lastValueData(plot: SeriesPlotIndex | undefined, globalLast: boolean, withRawPrice?: false): LastValueDataResultWithoutRawPrice;
     public lastValueData(plot: SeriesPlotIndex | undefined, globalLast: boolean, withRawPrice: true): LastValueDataResultWithRawPrice;
-    
-    // return object with:
+
+    // returns object with:
     // formatted price
     // raw price (if withRawPrice)
     // coordinate
     // color
-    // or { "noData": true } if last value could not be found
+    // or { "noData":true } if last value could not be found
     // NOTE: should NEVER return null or undefined!
     public lastValueData(
         plot: SeriesPlotIndex | undefined,
         globalLast: boolean,
         withRawPrice?: boolean
-    ): LastValueDataResultWithRawPrice | LastValueDataResultWithoutRawPrice {
-        const noDataRes: LastValueDataResultWithoutData = {noData: true};
+    ): LastValueDataResultWithoutRawPrice | LastValueDataResultWithRawPrice {
+        const noDataRes: LastValueDataResultWithoutData = { noData: true };
 
         const priceScale = this.priceScale();
 
-        if(this.model().timeScale().isEmpty() || priceScale.isEmpty() || this.data().isEmpty()) {
+        if (this.model().timeScale().isEmpty() || priceScale.isEmpty() || this.data().isEmpty()) {
             return noDataRes;
         }
 
         const visibleBars = this.model().timeScale().visibleBars();
         const firstValue = this.firstValue();
-
-        if(visibleBars === null || firstValue === null) {
+        if (visibleBars === null || firstValue === null) {
             return noDataRes;
         }
 
@@ -141,10 +136,9 @@ export class Series extends PriceDataSource implements IDestroyable {
         // TODO: make it more optimal
         let bar: Bar | null;
         let lastIndex: TimePointIndex;
-        
-        if(globalLast) {
+        if (globalLast) {
             const lastBar = this.data().bars().last();
-            if(lastBar === null) {
+            if (lastBar === null) {
                 return noDataRes;
             }
 
@@ -152,39 +146,33 @@ export class Series extends PriceDataSource implements IDestroyable {
             lastIndex = lastBar.index;
         } else {
             const endBar = this.data().bars().search(visibleBars.lastBar(), PlotRowSearchMode.NearestLeft);
-            if(endBar === null) {
+            if (endBar === null) {
                 return noDataRes;
             }
 
             bar = this.data().bars().valueAt(endBar.index);
-            if(bar === null) {
+            if (bar === null) {
                 return noDataRes;
             }
-
-            bar = this.data().bars().valueAt(endBar.index);
-            if(bar === null) {
-                return noDataRes;
-            }
-            
             lastIndex = endBar.index;
         }
 
         const price = plot !== undefined ? bar.value[plot] as number : this._barFunction(bar.value);
         const barColorer = this.barColorer();
-        const style = barColorer.barStyle(lastIndex, {value: bar});
+        const style = barColorer.barStyle(lastIndex, { value: bar });
         const floatCoordinate = priceScale.priceToCoordinate(price, firstValue, true);
 
         return {
             noData: false,
-            price: withRawPrice ? price: undefined,
+            price: withRawPrice ? price : undefined,
             text: priceScale.formatPrice(price, firstValue),
             formattedPriceAbsolute: priceScale.formatPriceAbsolute(price),
             formattedPricePercentage: priceScale.formatPricePercentage(price, firstValue),
             color: style.barColor,
-            floatCoordinate,
+            floatCoordinate: floatCoordinate,
             coordinate: Math.round(floatCoordinate) as Coordinate,
-            index: lastIndex
-        }
+            index: lastIndex,
+        };
     }
 
     public data(): SeriesData {
@@ -193,16 +181,17 @@ export class Series extends PriceDataSource implements IDestroyable {
 
     public createPaneView(): void {
         this._paneView = null;
-
-        switch(this._seriesType) {
+        switch (this._seriesType) {
             // case 'Bar': {
-            //     this._paneView = new SeriesBarsPaneView(this, this.model);
+            //     this._paneView = new SeriesBarsPaneView(this, this.model());
             //     break;
             // }
+
             // case 'Candle': {
             //     this._paneView = new SeriesCandlesPaneView(this, this.model());
- 			// 	break;
+            //     break;
             // }
+
             case 'Line': {
                 this._paneView = new SeriesLinePaneView(this, this.model());
                 break;
@@ -223,7 +212,7 @@ export class Series extends PriceDataSource implements IDestroyable {
     }
 
     public barColorer(): SeriesBarColorer {
-        if(this._barColorerCache !== null) {
+        if (this._barColorerCache !== null) {
             return this._barColorerCache;
         }
 
@@ -237,7 +226,6 @@ export class Series extends PriceDataSource implements IDestroyable {
 
     public applyOptions(options: DeepPartial<SeriesOptions>): void {
         merge(this._options, options);
-
         this._recreateFormatter();
         this.model().updateSource(this);
     }
@@ -245,14 +233,12 @@ export class Series extends PriceDataSource implements IDestroyable {
     public setData(data: ReadonlyArray<PlotRow<Bar['time'], Bar['value']>>, updatePalette: boolean, palette?: Palette): void {
         this._data.clear();
         this._data.bars().merge(data);
-        if(updatePalette) {
+        if (updatePalette) {
             this._palette = (palette === undefined) ? new Palette() : palette;
         }
-
-        if(this._paneView !== null) {
+        if (this._paneView !== null) {
             this._paneView.update('data');
         }
-
         const sourcePane = this.model().paneForSource(this);
         this.model().recalculatePane(sourcePane);
         this.model().updateSource(this);
@@ -262,16 +248,14 @@ export class Series extends PriceDataSource implements IDestroyable {
 
     public updateData(data: ReadonlyArray<PlotRow<Bar['time'], Bar['value']>>): void {
         this._data.bars().merge(data);
-
-        if(this._paneView !== null) {
+        if (this._paneView !== null) {
             this._paneView.update('data');
         }
-
         const sourcePane = this.model().paneForSource(this);
- 		this.model().recalculatePane(sourcePane);
- 		this.model().updateSource(this);
- 		this.model().updateCrossHair();
- 		this.model().lightUpdate();
+        this.model().recalculatePane(sourcePane);
+        this.model().updateSource(this);
+        this.model().updateCrossHair();
+        this.model().lightUpdate();
     }
 
     public palette(): Palette {
@@ -284,7 +268,7 @@ export class Series extends PriceDataSource implements IDestroyable {
 
     public firstValue(): number | null {
         const bar = this.firstBar();
-        if(bar === null) {
+        if (bar === null) {
             return null;
         }
 
@@ -293,11 +277,11 @@ export class Series extends PriceDataSource implements IDestroyable {
 
     public firstBar(): Bar | null {
         const visibleBars = this.model().timeScale().visibleBars();
-        if(visibleBars === null)
+        if (visibleBars === null) {
             return null;
+        }
 
         const startTimePoint = visibleBars.firstBar();
-
         return this.data().search(startTimePoint, PlotRowSearchMode.NearestRight);
     }
 
@@ -311,26 +295,26 @@ export class Series extends PriceDataSource implements IDestroyable {
     }
 
     public nearestData(index: TimePointIndex, options?: PlotRowSearchMode): PlotRow<Bar['time'], Bar['value']> | null {
-        if(!isInteger(index))
+        if (!isInteger(index)) {
             return null;
+        }
 
         return this.data().search(index, options);
     }
 
     public paneViews(): ReadonlyArray<IPaneView> {
-        if(!this.isVisible()) 
+        if (!this.isVisible()) {
             return [];
-
+        }
         const res: IPaneView[] = [];
-        if(this.priceScale() === this.model().mainPriceScale()) {
+
+        if (this.priceScale() === this.model().mainPriceScale()) {
             res.push(this._baseHorizontalLineView);
         }
-
         res.push(ensureNotNull(this._paneView));
         res.push(this._priceLineView);
 
         res.push(this._panePriceAxisView);
-
         return res;
     }
 
@@ -339,30 +323,36 @@ export class Series extends PriceDataSource implements IDestroyable {
     }
 
     public priceRange(startTimePoint: TimePointIndex, endTimePoint: TimePointIndex): PriceRange | null {
-        if(!isInteger(startTimePoint) || !isInteger(endTimePoint))
-            return null;
-
-        if(this.data().isEmpty()) {
+        if (!isInteger(startTimePoint)) {
             return null;
         }
 
+        if (!isInteger(endTimePoint)) {
+            return null;
+        }
+
+        if (this.data().isEmpty()) {
+            return null;
+        }
+
+        // TODO: refactor this
         // series data is strongly hardcoded to keep bars
         const priceSource = (this._seriesType === 'Line' || this._seriesType === 'Area' || this._seriesType === 'Histogram') ? 'close' : null;
         let barsMinMax: MinMax | null;
-        
-        if(priceSource !== null) {
-            barsMinMax = this.data().bars().minMaxOnRangeCached(startTimePoint, endTimePoint, [{name: priceSource, offset: 0}]);
+        if (priceSource !== null) {
+            barsMinMax = this.data().bars().minMaxOnRangeCached(startTimePoint, endTimePoint, [{ name: priceSource, offset: 0 }]);
         } else {
-            barsMinMax = this.data().bars().minMaxOnRangeCached(startTimePoint, endTimePoint, [{name: 'low', offset: 0}, {name: 'high', offset: 0}]);
+            barsMinMax = this.data().bars().minMaxOnRangeCached(startTimePoint, endTimePoint, [{ name: 'low', offset: 0 }, { name: 'high', offset: 0 }]);
         }
 
-        let range = barsMinMax !== null ? 
-                        barsMinMax.min === barsMinMax.max ?
-                            new PriceRange(barsMinMax.min - 0.5, barsMinMax.max + 0.5) :
-                            new PriceRange(barsMinMax.min, barsMinMax.max) :
-                        new PriceRange(-0.5, 0.5);
+        let range =
+            barsMinMax !== null ?
+                barsMinMax.min === barsMinMax.max ?
+                    new PriceRange(barsMinMax.min - 0.5, barsMinMax.max + 0.5) : // special case: range consists of the only point
+                    new PriceRange(barsMinMax.min, barsMinMax.max) :
+                new PriceRange(-0.5, 0.5);
 
-        if(this.seriesType() === 'Histogram') {
+        if (this.seriesType() === 'Histogram') {
             range = range.merge(new PriceRange(this._options.histogramStyle.base, this._options.histogramStyle.base));
         }
 
@@ -382,22 +372,22 @@ export class Series extends PriceDataSource implements IDestroyable {
     }
 
     public updateAllViews(): void {
-        if(this._paneView === null) 
+        if (this._paneView === null) {
             return;
+        }
 
         this._paneView.update();
 
         const priceAxisViewsLength = this._priceAxisViews.length;
-        for(let i = 0; i < priceAxisViewsLength; i++) {
+        for (let i = 0; i < priceAxisViewsLength; i++) {
             this._priceAxisViews[i].update();
         }
-
         this._priceLineView.update();
         this._baseHorizontalLineView.update();
     }
 
     public setPriceScale(priceScale: PriceScale): void {
-        if(this._priceScale === priceScale) {
+        if (this._priceScale === priceScale) {
             return;
         }
 
@@ -408,23 +398,19 @@ export class Series extends PriceDataSource implements IDestroyable {
         return ensureNotNull(this._priceScale);
     }
 
-    public markerDataAtIndex(index: TimePointIndex): MarketData | null {
-        const getValue = (this._seriesType === 'Line' && this._options.lineStyle.crossHairMarkerVisible) || 
-                        (this._seriesType === 'Area' && this._options.areaStyle.crossHairMarkerVisible);
-        
-        if(!getValue) {
+    public markerDataAtIndex(index: TimePointIndex): MarkerData | null {
+        const getValue = (this._seriesType === 'Line' && this._options.lineStyle.crossHairMarkerVisible) ||
+            (this._seriesType === 'Area' && this._options.areaStyle.crossHairMarkerVisible);
+        if (!getValue) {
             return null;
         }
-
         const bar = this._data.valueAt(index);
-        if(bar === null) {
+        if (bar === null) {
             return null;
         }
-
         const price = this._barFunction(bar.value);
         const radius = this._markerRadius();
-
-        return {price, radius};
+        return { price, radius };
     }
 
     public title(): string {
@@ -432,7 +418,7 @@ export class Series extends PriceDataSource implements IDestroyable {
     }
 
     private _markerRadius(): number {
-        switch(this._seriesType) {
+        switch (this._seriesType) {
             case 'Line': {
                 return this._options.lineStyle.crossHairMarkerRadius;
             }
@@ -440,7 +426,6 @@ export class Series extends PriceDataSource implements IDestroyable {
                 return this._options.areaStyle.crossHairMarkerRadius;
             }
         }
-
         return 0;
     }
 

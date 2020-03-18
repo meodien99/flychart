@@ -1,4 +1,4 @@
-import { TimedValue, SeriesItemsIndexesRange, visibleTimedValue } from "../../models/time-data";
+import { TimedValue, SeriesItemsIndexesRange, visibleTimedValues } from "../../models/time-data";
 import { IUpdatablePaneView, UpdateType } from "./iupdatable-pane-view";
 import { Series } from "../../models/Series";
 import { ChartModel } from "../../models/Chart";
@@ -7,68 +7,69 @@ import { PriceScale } from "../../models/PriceScale";
 import { TimeScale } from "../../models/TimeScale";
 import { ensureNotNull } from "../../helpers/assertions";
 
-export abstract class  SeriesPaneViewBase<ItemType extends TimedValue> implements IUpdatablePaneView {
-    protected _series: Series;
-    protected _model: ChartModel;
-    protected _invalidated: boolean = true;
-    protected _dataInvalidated: boolean = true;
-    protected _items: ItemType[] = [];
-    protected _itemVisibleRange: SeriesItemsIndexesRange | null = null;
 
-    constructor(series: Series, model: ChartModel) {
-        this._series = series;
-        this._model = model;
-    }
+export abstract class SeriesPaneViewBase<ItemType extends TimedValue> implements IUpdatablePaneView {
+	protected _series: Series;
+	protected _model: ChartModel;
+	protected _invalidated: boolean = true;
+	protected _dataInvalidated: boolean = true;
+	protected _items: ItemType[] = [];
+	protected _itemsVisibleRange: SeriesItemsIndexesRange | null = null;
 
-    public update(updateType?: UpdateType): void {
-        this._invalidated = true;
-        if(updateType === 'data') {
-            this._dataInvalidated = true;
-        }
-    }
+	public constructor(series: Series, model: ChartModel) {
+		this._series = series;
+		this._model = model;
+	}
 
-    public abstract renderer(height: number, width: number): IPaneRenderer;
+	public update(updateType?: UpdateType): void {
+		this._invalidated = true;
+		if (updateType === 'data') {
+			this._dataInvalidated = true;
+		}
+	}
 
-    protected _makeValid(): void {
-        if(this._dataInvalidated) {
-            this._fillRawPoints();
-            this._dataInvalidated = false;
-        }
+	public abstract renderer(height: number, width: number): IPaneRenderer;
 
-        if(this._invalidated) {
-            this._updatePoints();
-            this._invalidated = false;
-        }
-    }
+	protected _makeValid(): void {
+		if (this._dataInvalidated) {
+			this._fillRawPoints();
+			this._dataInvalidated = false;
+		}
 
-    protected abstract _fillRawPoints(): void;
+		if (this._invalidated) {
+			this._updatePoints();
 
- 	protected abstract _convertToCoordinates(priceScale: PriceScale, timeScale: TimeScale, firstValue: number): void;
+			this._invalidated = false;
+		}
+	}
 
-    protected _updatePoints(): void {
-        const priceScale = this._series.priceScale();
-        const timeScale = this._model.timeScale();
+	protected abstract _fillRawPoints(): void;
 
-        if(timeScale.isEmpty() || priceScale.isEmpty()) {
-            this._itemVisibleRange = null;
-            return;
-        }
+	protected abstract _convertToCoordinates(priceScale: PriceScale, timeScale: TimeScale, firstValue: number): void;
 
-        const visibleBars = timeScale.visibleBars();
-        if(visibleBars ===  null)  {
-            this._itemVisibleRange = null;
-            return;
-        }
+	protected _updatePoints(): void {
+		const priceScale = this._series.priceScale();
+		const timeScale = this._model.timeScale();
 
-        if(this._series.data().bars().size() === 0) {
-            this._itemVisibleRange = null;
-            return;
-        }
+		if (timeScale.isEmpty() || priceScale.isEmpty()) {
+			this._itemsVisibleRange = null;
+			return;
+		}
 
-        this._itemVisibleRange = visibleTimedValue(this._items, visibleBars);
-        
-        const firstValue = ensureNotNull(this._series.firstValue());
-        
-        this._convertToCoordinates(priceScale, timeScale, firstValue);
-    }
+		const visibleBars = timeScale.visibleBars();
+		if (visibleBars === null) {
+			this._itemsVisibleRange = null;
+			return;
+		}
+
+		if (this._series.data().bars().size() === 0) {
+			this._itemsVisibleRange = null;
+			return;
+		}
+
+		this._itemsVisibleRange = visibleTimedValues(this._items, visibleBars);
+		const firstValue = ensureNotNull(this._series.firstValue());
+
+		this._convertToCoordinates(priceScale, timeScale, firstValue);
+	}
 }

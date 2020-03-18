@@ -29,23 +29,23 @@ export class PanePriceAxisView implements IPaneView {
 
     public renderer(height: number, width: number): IPaneRenderer | null {
         const pane = this._chartModel.paneForSource(this._dataSource);
-        if(pane === null) {
+        if (pane === null) {
             return null;
         }
 
         const priceScale = this._dataSource.priceScale();
-        if(priceScale === null) {
+        if (priceScale === null) {
             return null;
         }
 
         const position = pane.priceScalePosition();
-        if(position === 'overlay') {
-            // both source and main source are overlay
-            return null
+        if (position === 'overlay') {
+            // both source and main source are overlays
+            return null;
         }
 
         const options = this._chartModel.priceAxisRendererOptions();
-        if(options.fontSize !== this._fontSize) {
+        if (options.fontSize !== this._fontSize) {
             this._fontSize = options.fontSize;
             this._textWidthCache.reset();
         }

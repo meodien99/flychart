@@ -18,7 +18,7 @@ export type BarColorerStyle = {
 }
 
 const emptyResult: BarColorerStyle = {
-    barColor:'',
+    barColor: '',
     barBorderColor: '',
     barWickColor: ''
 };
@@ -26,47 +26,41 @@ const emptyResult: BarColorerStyle = {
 export class SeriesBarColorer {
     private _series: Series;
 
-    public constructor(series: Series)  {
+    public constructor(series: Series) {
         this._series = series;
     }
 
-    // precomputedBars: {value: [Array BarValues], previousValue: [Array BarValues] | undefined}
-    // Used to avoid binary search if bars are already known
     public barStyle(barIndex: TimePointIndex, precomputedBars?: PrecomputedBars): BarColorerStyle {
+        // precomputedBars: {value: [Array BarValues], previousValue: [Array BarValues] | undefined}
+        // Used to avoid binary search if bars are already known
+
         const targetType = this._series.seriesType();
-        switch(targetType) {
-            case 'Line': 
+        switch (targetType) {
+            case 'Line':
                 return this._lineStyle();
+
             case 'Area':
                 return this._areaStyle();
+
             case 'Bar':
                 return this._barStyle(barIndex, precomputedBars);
+
             case 'Candle':
                 return this._candleStyle(barIndex, precomputedBars);
+
             case 'Histogram':
                 return this._histogramStyle(barIndex, precomputedBars);
         }
 
-        throw new Error('unknown chart style');
-    }
-
-    private _lineStyle(): BarColorerStyle {
-        const result = {...emptyResult};
-        result.barColor =  this._series.options().lineStyle.color;
-        return result;
-    }
-
-    private _areaStyle(): BarColorerStyle {
-        const result = {...emptyResult};
-        result.barColor = this._series.options().areaStyle.lineColor;
-        return result;
+        throw new Error('Unknown chart style');
     }
 
     private _barStyle(barIndex: TimePointIndex, precomputedBars?: PrecomputedBars): BarColorerStyle {
-        const result = {...emptyResult};
+        const result = { ...emptyResult };
         const barStyle = this._series.options().barStyle;
 
-        const {upColor, downColor} = barStyle;
+        const upColor = barStyle.upColor;
+        const downColor = barStyle.downColor;
         const borderUpColor = upColor;
         const borderDownColor = downColor;
 
@@ -101,19 +95,28 @@ export class SeriesBarColorer {
         return result;
     }
 
+    private _areaStyle(): BarColorerStyle {
+        const result = { ...emptyResult };
+        result.barColor = this._series.options().areaStyle.lineColor;
+        return result;
+    }
+
+    private _lineStyle(): BarColorerStyle {
+        const result = { ...emptyResult };
+        result.barColor = this._series.options().lineStyle.color;
+        return result;
+    }
+
     private _histogramStyle(barIndex: TimePointIndex, precomputedBars?: PrecomputedBars): BarColorerStyle {
-        const result = {...emptyResult};
+        const result = { ...emptyResult };
         const currentBar = ensureNotNull<Bar>(this._findBar(barIndex, precomputedBars));
-        const color = currentBar.value[SeriesPlotIndex.Color];
-        if(color !== undefined && color !== null) {
+        const colorValue = currentBar.value[SeriesPlotIndex.Color];
+        if (colorValue !== undefined && colorValue !== null) {
             const palette = ensureNotNull<Palette>(this._series.palette());
-            const c = palette.colorByIndex(color);
-            if(c !== undefined)
-                result.barColor = c;
+            result.barColor = palette.colorByIndex(colorValue) || "";
         } else {
             result.barColor = this._series.options().histogramStyle.color;
         }
-
         return result;
     }
 
@@ -122,7 +125,7 @@ export class SeriesBarColorer {
     }
 
     private _findBar(barIndex: TimePointIndex, precomputedBars?: PrecomputedBars): Bar | null {
-        if(precomputedBars !== undefined) {
+        if (precomputedBars !== undefined) {
             return precomputedBars.value;
         }
 

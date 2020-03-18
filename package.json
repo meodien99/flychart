@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "HTML5 financial canvas charting library",
   "main": "index.js",
-  "author": "",
+  "author": "madcat",
+  "module": "dist/flycharts.esm.production.js",
+  "typings": "dist/typings.d.ts",
   "license": "Apache-2.0",
   "files": [
     "dist/**",
@@ -34,7 +36,7 @@
   },
   "scripts": {
     "clean": "rimraf lib/ dist/",
-    "bundle-dts": "tsc --noEmit --allowJs dts-config.js",
+    "bundle-dts": "tsc --noEmit --allowJs dts-config.js && dts-bundle-generator --config dts-config.js",
     "tsc": "tsc -b src",
     "tsc-watch": "tsc -b --watch --preserveWatchOutput",
     "tsc-all": "tsc -b .",

@@ -24,32 +24,32 @@ import { SeriesOptions, SeriesType } from "./SeriesOptions";
 import { Coordinate } from "./Coordinate";
 import { IPriceDataSource } from "./iprice-data-source";
 
-export type HandleScrollOptions = {
+export interface HandleScrollOptions {
     mouseWheel: boolean;
     pressedMouseMove: boolean;
-};
+}
 
-export type HandleScaleOptions = {
-    mouseWheel: boolean,
-    pinch: boolean,
-    axisPressedMouseMove: boolean
-};
+export interface HandleScaleOptions {
+    mouseWheel: boolean;
+    pinch: boolean;
+    axisPressedMouseMove: boolean;
+}
 
 type InvalidateHandler = (mask: InvalidateMask) => void;
 
-export type ChartOptions = {
-    width: number,
-    height: number,
-    watermark: WatermarkOptions,
-    layout: LayoutOptions,
-    priceScale: PriceScaleOptions,
-    timeScale: TimeScaleOptions,
-    crossHair: CrossHairOptions,
- 	grid: GridOptions,
- 	localization: LocalizationOptions,
- 	handleScroll: HandleScrollOptions,
- 	handleScale: HandleScaleOptions,
-};
+export interface ChartOptions {
+    width: number;
+    height: number;
+    watermark: WatermarkOptions;
+    layout: LayoutOptions;
+    priceScale: PriceScaleOptions;
+    timeScale: TimeScaleOptions;
+    crossHair: CrossHairOptions;
+    grid: GridOptions;
+    localization: LocalizationOptions;
+    handleScroll: HandleScrollOptions;
+    handleScale: HandleScaleOptions;
+}
 
 export class ChartModel implements IDestroyable {
     private readonly _options: ChartOptions;
@@ -62,14 +62,13 @@ export class ChartModel implements IDestroyable {
     private readonly _grid: Grid;
     private readonly _crossHair: CrossHair;
     private readonly _magnet: Magnet;
-    private readonly _watermak: Watermark;
+    private readonly _watermark: Watermark;
 
     private _serieses: Series[] = [];
 
     private _width: number = 0;
     private _initialTimeScrollPos: number | null = null;
     private _hoveredSource: IDataSource | null = null;
-
     private readonly _mainPriceScaleOptionsChanged: Delegate = new Delegate();
     private _crossHairMoved: Delegate<TimePointIndex | null, Point | null> = new Delegate();
 
@@ -79,16 +78,15 @@ export class ChartModel implements IDestroyable {
 
         this._rendererOptionsProvider = new PriceAxisRendererOptionsProvider(this);
 
-        this._timeScale = new TimeScale(this, options.timeScale, options.localization);
+        this._timeScale = new TimeScale(this, options.timeScale, this._options.localization);
         this._grid = new Grid();
         this._crossHair = new CrossHair(this, options.crossHair);
         this._magnet = new Magnet(options.crossHair);
-        this._watermak = new Watermark(this, options.watermark);
+        this._watermark = new Watermark(this, options.watermark);
 
         this.createPane();
-
         this._panes[0].setStretchFactor(DEFAULT_STRETCH_FACTOR * 2);
-        this._panes[0].addDataSource(this._watermak, true, false);
+        this._panes[0].addDataSource(this._watermark, true, false);
     }
 
     public updatePane(pane: Pane): void {
@@ -122,17 +120,18 @@ export class ChartModel implements IDestroyable {
     }
 
     public applyOptions(options: DeepPartial<ChartOptions>): void {
+        // TODO: implement this
         merge(this._options, options);
-
-        if(options.priceScale !== undefined) {
+        if (options.priceScale !== undefined) {
             this.mainPriceScale().applyOptions(options.priceScale);
             this._mainPriceScaleOptionsChanged.fire();
         }
-        if(options.timeScale !== undefined) {
+
+        if (options.timeScale !== undefined) {
             this._timeScale.applyOptions(options.timeScale);
         }
 
-        if(options.localization !== undefined) {
+        if (options.localization !== undefined) {
             this._timeScale.applyLocalizationOptions(options.localization);
             this.mainPriceScale().updateFormatter();
         }
@@ -157,10 +156,10 @@ export class ChartModel implements IDestroyable {
     }
 
     public watermarkSource(): Watermark | null {
-        return this._watermak;
+        return this._watermark;
     }
 
-    public crossHairSource(): CrossHair { 
+    public crossHairSource(): CrossHair {
         return this._crossHair;
     }
 
@@ -188,7 +187,7 @@ export class ChartModel implements IDestroyable {
     public createPane(index?: number): Pane {
         const pane = new Pane(this._timeScale, this);
 
-        if(index !== undefined) {
+        if (index !== undefined) {
             this._panes.splice(index, 0, pane);
         } else {
             // adding to the end - common case
@@ -204,9 +203,8 @@ export class ChartModel implements IDestroyable {
         const mask = new InvalidateMask(InvalidateLevel.None);
         mask.invalidatePane(actualIndex, {
             level: InvalidateLevel.None,
-            autoScale: true
+            autoScale: true,
         });
-
         this.invalidate(mask);
 
         return pane;
@@ -222,7 +220,7 @@ export class ChartModel implements IDestroyable {
     }
 
     public endScalePrice(pane: Pane, priceScale: PriceScale): void {
-        pane.endPriceScale(priceScale);
+        pane.endScalePrice(priceScale);
         this._invalidate(this._paneInvalidationMask(pane, InvalidateLevel.Light));
     }
 
@@ -263,12 +261,12 @@ export class ChartModel implements IDestroyable {
         this._timeScale.startScale(position);
     }
 
-    /**
- 	 * Zoom in/out the chart (depends on scale value).
- 	 * @param pointX - X coordinate of the point to apply the zoom (the point which should stay on its place)
- 	 * @param scale - Zoom value. Negative value means zoom out, positive - zoom in.
- 	 */
- 	public zoomTime(pointX: Coordinate, scale: number): void {
+	/**
+	 * Zoom in/out the chart (depends on scale value).
+	 * @param pointX - X coordinate of the point to apply the zoom (the point which should stay on its place)
+	 * @param scale - Zoom value. Negative value means zoom out, positive - zoom in.
+	 */
+    public zoomTime(pointX: Coordinate, scale: number): void {
         const timeScale = this.timeScale();
         if (timeScale.isEmpty() || scale === 0) {
             return;
@@ -520,18 +518,17 @@ export class ChartModel implements IDestroyable {
 
     private _paneInvalidationMask(pane: Pane | null, level: InvalidateLevel): InvalidateMask {
         const inv = new InvalidateMask(level);
-        if(pane !== null) {
+        if (pane !== null) {
             const index = this._panes.indexOf(pane);
             inv.invalidatePane(index, {
-                level
+                level,
             });
         }
-
         return inv;
     }
 
     private _invalidationMaskForSource(source: IDataSource, invalidateType?: InvalidateLevel): InvalidateMask {
-        if(invalidateType === undefined) {
+        if (invalidateType === undefined) {
             invalidateType = InvalidateLevel.Light;
         }
 
@@ -539,7 +536,7 @@ export class ChartModel implements IDestroyable {
     }
 
     private _invalidate(mask: InvalidateMask): void {
-        if(this._invalidateHandler) {
+        if (this._invalidateHandler) {
             this._invalidateHandler(mask);
         }
 
@@ -555,12 +552,11 @@ export class ChartModel implements IDestroyable {
 
         pane.addDataSource(series, overlay, false);
 
-        if(overlay && scaleMargins !== undefined) {
+        if (overlay && scaleMargins !== undefined) {
             series.priceScale().applyOptions({
-                scaleMargins
+                scaleMargins,
             });
         }
-
         return series;
     }
 }

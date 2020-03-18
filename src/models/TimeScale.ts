@@ -12,7 +12,7 @@ import { LocalizationOptions } from "./localization-options";
 import { DeepPartial, merge, isInteger } from "../helpers/strict-type-checkers";
 import { ensureNotNull } from "../helpers/assertions";
 import { ISubscription } from "../helpers/isubscription";
-import { clamp } from '../helpers/math'; 
+import { clamp } from '../helpers/math';
 
 const enum Constants {
     DefaultAnimationDuration = 400,
@@ -61,25 +61,21 @@ export class TimeScale {
     private readonly _localizationOptions: LocalizationOptions;
 
     private _dateTimeFormatter!: DateFormatter | DateTimeFormatter;
+
     private _width: number = 0;
     private _baseIndexOrNull: TimePointIndex | null = null;
     private _rightOffset: number;
     private _points: TimePoints = new TimePoints();
-    
     private readonly _barSpacingChanged: Delegate<number, number> = new Delegate();
     private _barSpacing: number;
     private _scrollStartPoint: Coordinate | null = null;
     private _scaleStartPoint: Coordinate | null = null;
-
     private readonly _tickMarks: TickMarks = new TickMarks();
     private _formattedBySpan: Map<number, LabelCache> = new Map();
-    
     private _visibleBars: BarsRange | null = null;
     private _visibleBarsInvalidated: boolean = true;
-
     private readonly _visibleBarsChanged: Delegate = new Delegate();
     private readonly _optionsApplied: Delegate = new Delegate();
-
     private _leftEdgeIndex: TimePointIndex | null = null;
     private _commonTransitionStartState: TransitionState | null = null;
     private _timeMarksCache: TimeMark[] | null = null;
@@ -88,12 +84,10 @@ export class TimeScale {
 
     public constructor(model: ChartModel, options: TimeScaleOptions, localizationOptions: LocalizationOptions) {
         this._options = options;
- 		this._localizationOptions = localizationOptions;
+        this._localizationOptions = localizationOptions;
+        this._rightOffset = options.rightOffset;
+        this._barSpacing = options.barSpacing;
         this._model = model;
-         
-        const {rightOffset, barSpacing} = options;
-        this._rightOffset = rightOffset;
-        this._barSpacing = barSpacing;
 
         this._updateDateTimeFormatter();
     }
@@ -105,90 +99,90 @@ export class TimeScale {
     public applyLocalizationOptions(localizationOptions: DeepPartial<LocalizationOptions>): void {
         merge(this._localizationOptions, localizationOptions);
 
-        this._validateTickMarks();
+        this._invalidateTickMarks();
         this._updateDateTimeFormatter();
     }
 
     public applyOptions(options: DeepPartial<TimeScaleOptions>, localizationOptions?: DeepPartial<LocalizationOptions>): void {
         merge(this._options, options);
 
-        if(this._options.fixLeftEdge) {
+        if (this._options.fixLeftEdge) {
             const firstIndex = this._points.firstIndex();
-
-            if(firstIndex !== null) {
+            if (firstIndex !== null) {
                 this.setLeftEdgeFix(firstIndex);
             }
         } else {
             this._leftEdgeIndex = null;
         }
 
-        if(options.rightOffset !== undefined) {
+        if (options.rightOffset !== undefined) {
             this.setRightOffset(options.rightOffset);
         }
 
-        if(options.barSpacing !== undefined) {
+        if (options.barSpacing !== undefined) {
             this.setBarSpacing(options.barSpacing);
         }
 
-        this._validateTickMarks();
+        this._invalidateTickMarks();
         this._updateDateTimeFormatter();
 
         this._optionsApplied.fire();
-    }
-
-    public setRightOffset(offset: number): void {
-        this._visibleBarsInvalidated = true;
-        this._rightOffset = offset;
-        this._correctOffset();
-        this._model.recalculateAllPanes();
-        this._model.lightUpdate();
     }
 
     public isEmpty(): boolean {
         return this._width === 0 || this._points.size() === 0;
     }
 
+    public visibleBars(): BarsRange | null {
+        console.warn('_visibleBarsInvalidated', this._visibleBarsInvalidated, this._visibleBars);
+
+        if (this._visibleBarsInvalidated) {
+            this._visibleBarsInvalidated = false;
+            this._updateVisibleBars();
+        }
+
+        return this._visibleBars;
+    }
+
     public tickMarks(): TickMarks {
         return this._tickMarks;
     }
-
     public points(): TimePoints {
         return this._points;
     }
-
     public width(): number {
         return this._width;
     }
 
     public setWidth(width: number): void {
-        if(!isFinite(width) || width <= 0) {
+        if (!isFinite(width) || width <= 0) {
             return;
         }
 
-        if(this._width === width)
+        if (this._width === width) {
             return;
+        }
 
         this._visibleBarsInvalidated = true;
 
-        if(this._options.lockVisibleTimeRangeOnResize && this._width) {
-            // recalulate bar spacing
+        if (this._options.lockVisibleTimeRangeOnResize && this._width) {
+            // recalculate bar spacing
             const newBarSpacing = this._barSpacing * width / this._width;
             this._tryToUpdateBarSpacing(newBarSpacing);
         }
 
-        // if time scale is scrolled to the end of data we have fixed right edge
-        // keep the left instead of right
+        // if time scale is scrolled to the end of data and we have fixed right edge
+        // keep left edge instead of right
         // we need it to avoid "shaking" if the last bar visibility affects time scale width
-        if(this._leftEdgeIndex !== null) {
+        if (this._leftEdgeIndex !== null) {
             const firstVisibleBar = ensureNotNull<BarsRange>(this.visibleBars()).firstBar();
-
             // firstVisibleBar could be less than this._leftEdgeIndex
             // since index is a center of bar
-            if(firstVisibleBar <= this._leftEdgeIndex) {
+            if (firstVisibleBar <= this._leftEdgeIndex) {
                 const delta = this._width - width;
-                // reduce _rightOffset means move right
+                // reduce  _rightOffset means move right
                 // we could move more than required - this will be fixed by _correctOffset()
-                this._rightOffset -= Math.round(delta/this._barSpacing) + 1;
+                this._rightOffset -= Math.round(delta / this._barSpacing) + 1;
             }
         }
 
@@ -197,14 +191,14 @@ export class TimeScale {
     }
 
     public indexToCoordinate(index: TimePointIndex, keepFloat?: boolean): Coordinate {
-        if(this.isEmpty() || !isInteger(index))
+        if (this.isEmpty() || !isInteger(index)) {
             return 0 as Coordinate;
+        }
 
         const baseIndex = this.baseIndex();
         const deltaFromRight = baseIndex + this._rightOffset - index;
         const coordinate = this._width - (deltaFromRight + 0.5) * this._barSpacing;
-
-        if(keepFloat) {
+        if (keepFloat) {
             return coordinate as Coordinate;
         }
 
@@ -216,11 +210,11 @@ export class TimeScale {
         const indexFrom = (visibleRange === undefined) ? 0 : visibleRange.from;
         const indexTo = (visibleRange === undefined) ? points.length : visibleRange.to;
 
-        for(let i = indexFrom; i < indexTo; i++) {
+        for (let i = indexFrom; i < indexTo; i++) {
             const index = points[i].time;
             const deltaFromRight = baseIndex + this._rightOffset - index;
             const coordinate = this._width - (deltaFromRight + 0.5) * this._barSpacing;
-            points[i].x = Math.round(coordinate) as Coordinate
+            points[i].x = Math.round(coordinate) as Coordinate;
         }
     }
 
@@ -232,13 +226,21 @@ export class TimeScale {
         return Math.ceil(this._coordinateToFloatIndex(x)) as TimePointIndex;
     }
 
+    public setRightOffset(offset: number): void {
+        this._visibleBarsInvalidated = true;
+        this._rightOffset = offset;
+        this._correctOffset();
+        this._model.recalculateAllPanes();
+        this._model.lightUpdate();
+    }
+
     public barSpacing(): number {
         return this._barSpacing;
     }
 
     public setBarSpacing(newBarSpacing: number): void {
         newBarSpacing = getValidBarSpacing(newBarSpacing);
-        if(!this._tryToUpdateBarSpacing(newBarSpacing)) {
+        if (!this._tryToUpdateBarSpacing(newBarSpacing)) {
             return;
         }
 
@@ -254,22 +256,12 @@ export class TimeScale {
         return this._rightOffset;
     }
 
-    public setLeftEdgeFix(index: TimePointIndex): void {
-        this._leftEdgeIndex = index;
-
-        const delta = ensureNotNull<BarsRange>(this.visibleBars()).firstBar() - index;
-        if(delta < 0) {
-            const leftEdgeOffset = this._rightOffset - delta - 1;
-            this.scrollToOffsetAnimated(leftEdgeOffset, 500);
-        }
-    }
-
     public marks(): TimeMark[] | null {
-        if(this.isEmpty()) {
+        if (this.isEmpty()) {
             return null;
         }
 
-        if(this._timeMarksCache !== null) {
+        if (this._timeMarksCache !== null) {
             return this._timeMarksCache;
         }
 
@@ -277,55 +269,58 @@ export class TimeScale {
         const fontSize = this._model.options().layout.fontSize;
 
         const maxLabelWidth = (fontSize + 4) * 5;
-        const indexPerLabel = Math.round(maxLabelWidth/spacing);
+        const indexPerLabel = Math.round(maxLabelWidth / spacing);
 
-        const visbileBars = ensureNotNull<BarsRange>(this.visibleBars());
+        const visibleBars = ensureNotNull<BarsRange>(this.visibleBars());
 
-        const firstBar = Math.max(visbileBars.firstBar(), visbileBars.firstBar() - indexPerLabel);
-        const lastBar = Math.max(visbileBars.lastBar(), visbileBars.lastBar() - indexPerLabel);
+        const firstBar = Math.max(visibleBars.firstBar(), visibleBars.firstBar() - indexPerLabel);
+        const lastBar = Math.max(visibleBars.lastBar(), visibleBars.lastBar() - indexPerLabel);
 
         const items = this._tickMarks.build(spacing, maxLabelWidth);
 
         let targetIndex = 0;
-
-        for(const tm of items) {
-            if(!(firstBar <= tm.index && tm.index <= lastBar)) {
+        for (const tm of items) {
+            if (!(firstBar <= tm.index && tm.index <= lastBar)) {
                 continue;
             }
 
             const time = this._tickMarks.indexToTime(tm.index);
-            if(time === null) {
+            if (time === null) {
                 continue;
             }
 
-            const coord = this.indexToCoordinate(tm.index);
-            const label = this._formatLabel(time, tm.span);
-            const span = tm.span;
-            const major = false;
-
-            if(targetIndex < this._labels.length) {
-                const lbl = this._labels[targetIndex];
-                lbl.coord = coord;
-                lbl.label = label;
-                lbl.span = span;
-                lbl.major = major;
+            if (targetIndex < this._labels.length) {
+                const label = this._labels[targetIndex];
+                label.coord = this.indexToCoordinate(tm.index);
+                label.label = this._formatLabel(time, tm.span);
+                label.span = tm.span;
+                label.major = false;
             } else {
                 this._labels.push({
-                    coord,
-                    label,
-                    span,
-                    major,
+                    coord: this.indexToCoordinate(tm.index),
+                    label: this._formatLabel(time, tm.span),
+                    span: tm.span,
+                    major: false,
                     // major: tm.label >= TimeConstants.DaySpan ? 1 : 0, // ??? there is no label in tick-marks.ts
                 });
             }
             targetIndex++;
         }
-
         this._labels.length = targetIndex;
 
         this._timeMarksCache = this._labels;
 
         return this._labels;
+    }
+
+    public reset(): void {
+        this._visibleBarsInvalidated = true;
+        this._points = new TimePoints();
+        this._scrollStartPoint = null;
+        this._scaleStartPoint = null;
+        this._clearCommonTransitionsStartState();
+        this._tickMarks.reset();
+        this._leftEdgeIndex = null;
     }
 
     public restoreDefault(): void {
@@ -335,44 +330,57 @@ export class TimeScale {
         this.setRightOffset(this._options.rightOffset);
     }
 
+    public setLeftEdgeFix(index: TimePointIndex): void {
+        this._leftEdgeIndex = index;
+        const delta = ensureNotNull<BarsRange>(this.visibleBars()).firstBar() - index;
+        if (delta < 0) {
+            const leftEdgeOffset = this._rightOffset - delta - 1;
+            this.scrollToOffsetAnimated(leftEdgeOffset, 500);
+        }
+    }
+
+    public fixLeftEdge(): boolean {
+        return this._options.fixLeftEdge;
+    }
+
     public setBaseIndex(baseIndex: TimePointIndex): void {
         this._visibleBarsInvalidated = true;
         this._baseIndexOrNull = baseIndex;
         this._correctOffset();
     }
 
-    /**
-     * Zoom in/out the scale around a `zoomPoint` on `scale` value.
-     * @param zoomPoint - X coordinate of the point to apply the zoom.
-     *  If `rightBarStayOnScroll` option is disabled, then will be used to restore right offset.
-     * @param scale - Zoom value (in 1/10 parts of current bar spacing).
-     *  Negative value means zoom out, otherwise zoom in
-     */
+	/**
+	 * Zoom in/out the scale around a `zoomPoint` on `scale` value.
+	 * @param zoomPoint - X coordinate of the point to apply the zoom.
+	 *   If `rightBarStaysOnScroll` option is disabled, then will be used to restore right offset.
+	 * @param scale - Zoom value (in 1/10 parts of current bar spacing).
+	 *   Negative value means zoom out, positive - zoom in.
+	 */
     public zoom(zoomPoint: Coordinate, scale: number): void {
         const floatIndexAtZoomPoint = this._coordinateToFloatIndex(zoomPoint);
 
         const barSpacing = this.barSpacing();
-        const newBarSpacing = barSpacing * scale * (barSpacing / 10);
+        const newBarSpacing = barSpacing + scale * (barSpacing / 10);
 
         // zoom in/out bar spacing
         this.setBarSpacing(newBarSpacing);
 
-        if(!this._options.rightBarStaysOnScroll) {
+        if (!this._options.rightBarStaysOnScroll) {
             // and then correct right offset to move index under zoomPoint back to its coordinate
             this.setRightOffset(this.rightOffset() + (floatIndexAtZoomPoint - this._coordinateToFloatIndex(zoomPoint)));
         }
     }
-    
+
     public startScale(x: Coordinate): void {
-        if(this._scrollStartPoint) {
+        if (this._scrollStartPoint) {
             this.endScroll();
         }
 
-        if(this._scaleStartPoint !== null || this._commonTransitionStartState !== null) {
+        if (this._scaleStartPoint !== null || this._commonTransitionStartState !== null) {
             return;
         }
 
-        if(this.isEmpty()) {
+        if (this.isEmpty()) {
             return;
         }
 
@@ -381,14 +389,13 @@ export class TimeScale {
     }
 
     public scaleTo(x: Coordinate): void {
-        if(this._commonTransitionStartState === null || this._commonTransitionStartState === undefined) {
+        if (this._commonTransitionStartState === null) {
             return;
         }
 
         const startLengthFromRight = clamp(this._width - x, 0, this._width);
         const currentLengthFromRight = clamp(this._width - ensureNotNull(this._scaleStartPoint), 0, this._width);
-
-        if(startLengthFromRight === 0 || currentLengthFromRight === 0) {
+        if (startLengthFromRight === 0 || currentLengthFromRight === 0) {
             return;
         }
 
@@ -398,19 +405,20 @@ export class TimeScale {
     }
 
     public endScale(): void {
-        if(this._scaleStartPoint === null) 
+        if (this._scaleStartPoint === null) {
             return;
+        }
 
         this._scaleStartPoint = null;
         this._clearCommonTransitionsStartState();
     }
 
     public startScroll(x: Coordinate): void {
-        if(this._scrollStartPoint !== null || this._commonTransitionStartState !== null) {
+        if (this._scrollStartPoint !== null || this._commonTransitionStartState !== null) {
             return;
         }
 
-        if(this.isEmpty()) {
+        if (this.isEmpty()) {
             return;
         }
 
@@ -420,11 +428,11 @@ export class TimeScale {
 
     public scrollTo(x: Coordinate): void {
         this._visibleBarsInvalidated = true;
-        if(this._scrollStartPoint === null) {
+        if (this._scrollStartPoint === null) {
             return;
         }
 
-        const shiftInLogical = (this._scrollStartPoint - x)/ this.barSpacing();
+        const shiftInLogical = (this._scrollStartPoint - x) / this.barSpacing();
         this._rightOffset = ensureNotNull<TransitionState>(this._commonTransitionStartState).rightOffset + shiftInLogical;
 
         // do not allow scroll out of visible bars
@@ -432,7 +440,7 @@ export class TimeScale {
     }
 
     public endScroll(): void {
-        if(this._scrollStartPoint === null) {
+        if (this._scrollStartPoint === null) {
             return;
         }
 
@@ -440,12 +448,12 @@ export class TimeScale {
         this._clearCommonTransitionsStartState();
     }
 
-    public scrollToRealtime(): void {
+    public scrollToRealTime(): void {
         this.scrollToOffsetAnimated(this._options.rightOffset);
     }
 
     public scrollToOffsetAnimated(offset: number, animationDuration: number = Constants.DefaultAnimationDuration): void {
-        if(!isFinite(offset)) {
+        if (!isFinite(offset)) {
             throw new RangeError('offset is required and must be finite number');
         }
 
@@ -455,14 +463,12 @@ export class TimeScale {
 
         const source = this._rightOffset;
         const animationStart = new Date().getTime();
-
         const animationFn = () => {
             const animationProgress = (new Date().getTime() - animationStart) / animationDuration;
             const finishAnimation = animationProgress >= 1;
             const rightOffset = finishAnimation ? offset : source + (offset - source) * animationProgress;
             this.setRightOffset(rightOffset);
-
-            if(!finishAnimation) {
+            if (!finishAnimation) {
                 setTimeout(animationFn, 20);
             }
         };
@@ -476,17 +482,15 @@ export class TimeScale {
 
     public update(index: TimePointIndex, values: TimePoint[], marks: TickMark[]): void {
         this._visibleBarsInvalidated = true;
-        if(values.length > 0) {
+        if (values.length > 0) {
             // we have some time points to merge
             const oldSize = this._points.size();
             this._points.merge(index, values);
-
-            if(this._rightOffset < 0 && (this._points.size() === oldSize + 1)) {
+            if (this._rightOffset < 0 && (this._points.size() === oldSize + 1)) {
                 this._rightOffset -= 1;
                 this._visibleBarsInvalidated = true;
             }
         }
-
         this._tickMarks.merge(marks);
         this._correctOffset();
     }
@@ -507,18 +511,9 @@ export class TimeScale {
         return this._baseIndexOrNull || 0 as TimePointIndex;
     }
 
-    public visibleBars(): BarsRange | null {
-        if(this._visibleBarsInvalidated) {
-            this._visibleBarsInvalidated = false;
-            this._updateVisibleBars();
-        }
-
-        return this._visibleBars;
-    }
-
     public setVisibleRange(range: BarsRange): void {
-        // const len = range.lastBar() - range.firstBar();
-        this._barSpacing = this._width/length;
+        const length = range.lastBar() - range.firstBar();
+        this._barSpacing = this._width / length;
         this._rightOffset = range.lastBar() - this.baseIndex();
         this._correctOffset();
         this._visibleBarsInvalidated = true;
@@ -529,38 +524,22 @@ export class TimeScale {
     public fitContent(): void {
         const first = this._points.firstIndex();
         const last = this._points.lastIndex();
-
-        if(first === null || last === null) {
+        if (first === null || last === null) {
             return;
         }
-
         this.setVisibleRange(new BarsRange(first - 1 as TimePointIndex, last + 1 + this._options.rightOffset as TimePointIndex));
     }
 
     public formatDateTime(time: TimePoint): string {
-        if(this._localizationOptions.timeFormatter !== undefined) {
+        if (this._localizationOptions.timeFormatter !== undefined) {
             return this._localizationOptions.timeFormatter(time.businessDay || time.timestamp);
         }
 
         return this._dateTimeFormatter.format(new Date(time.timestamp * 1000));
     }
 
-    public fixLeftEdge(): boolean {
-        return this._options.fixLeftEdge;
-    }
-
-    public reset(): void {
-        this._visibleBarsInvalidated = true;
-        this._points = new TimePoints();
-        this._scrollStartPoint = null;
-        this._scaleStartPoint = null;
-        this._clearCommonTransitionsStartState();
-        this._tickMarks.reset();
-        this._leftEdgeIndex = null;
-    }
-    
     private _rightOffsetForCoordinate(x: Coordinate): number {
-        return (this._width + 1 - x)/this._barSpacing;
+        return (this._width + 1 - x) / this._barSpacing;
     }
 
     private _coordinateToFloatIndex(x: Coordinate): number {
@@ -568,14 +547,14 @@ export class TimeScale {
         const baseIndex = this.baseIndex();
         const index = baseIndex + this._rightOffset - deltaFromRight;
 
-        // javascript uses very strange rounding
+        // JavaScript uses very strange rounding
         // we need rounding to avoid problems with calculation errors
-        return Math.round(index * 1000000)/1000000;
+        return Math.round(index * 1000000) / 1000000;
     }
 
     private _tryToUpdateBarSpacing(newBarSpacing: number): boolean {
         const oldBarSpacing = this._barSpacing;
-        if(oldBarSpacing === newBarSpacing) {
+        if (oldBarSpacing === newBarSpacing) {
             return false;
         }
 
@@ -587,119 +566,78 @@ export class TimeScale {
         return true;
     }
 
-    private _correctOffset(): void {
-        // block scrolling of to future
-        const maxRightOffset = this._maxRightOffset();
-
-        if(this._rightOffset > maxRightOffset) {
-            this._rightOffset = maxRightOffset;
-            this._visibleBarsInvalidated = true;
-        }
-
-        // block scrolling of to past
-        const minRightOffset = this._minRightOffset();
-        if(minRightOffset !== null && this._rightOffset < minRightOffset) {
-            this._rightOffset = minRightOffset;
-            this._visibleBarsInvalidated = true;
-        }
-    }
-
-    private _maxRightOffset(): number {
-        return (this._width / this._barSpacing) - Constants.MinVisibleBarsCount;
-    }
-
-    private _minRightOffset(): number | null {
-        const firstIndex = this._points.firstIndex();
-        const baseIndex = this._baseIndexOrNull;
-        if(firstIndex === null || baseIndex === null) {
-            return null;
-        }
-
-        if(this._leftEdgeIndex !== null) {
-            const barsEstimate = this._width/this._barSpacing;
-            return this._leftEdgeIndex - baseIndex + barsEstimate - 1;
-        }
-
-        return firstIndex - baseIndex - 1 + Constants.MinVisibleBarsCount;
-    }
-
-
     private _updateVisibleBars(): void {
-        if(this.isEmpty()) {
+        if (this.isEmpty()) {
             this._setVisibleBars(null);
             return;
         }
 
         const baseIndex = this.baseIndex();
-        const newBarsLength = Math.ceil(this._width/this._barSpacing) - 1;
+        const newBarsLength = Math.ceil(this._width / this._barSpacing) - 1;
         const rightIndex = Math.round(this._rightOffset + baseIndex) as TimePointIndex;
         const leftIndex = rightIndex - newBarsLength as TimePointIndex;
 
         this._setVisibleBars(new BarsRange(leftIndex, rightIndex));
     }
 
-    private _setVisibleBars(visbileBars: BarsRange | null): void {
-        if(visbileBars === null && this._visibleBars === null) {
-            return;
+    private _correctOffset(): void {
+        // block scrolling of to future
+        const maxRightOffset = this._maxRightOffset();
+        if (this._rightOffset > maxRightOffset) {
+            this._rightOffset = maxRightOffset;
+            this._visibleBarsInvalidated = true;
         }
 
-        const oldVisibleBars = this._visibleBars;
-        this._visibleBars = visbileBars;
+        // block scrolling of to past
+        const minRightOffset = this._minRightOffset();
 
-        if(this._visibleBars === null || oldVisibleBars !== null && !this._visibleBars.equals(oldVisibleBars)) {
-            this._visibleBarsChanged.fire();
+        if (minRightOffset !== null && this._rightOffset < minRightOffset) {
+            this._rightOffset = minRightOffset;
+            this._visibleBarsInvalidated = true;
+        }
+    }
+
+    private _minRightOffset(): number | null {
+        const firstIndex = this._points.firstIndex();
+        const baseIndex = this._baseIndexOrNull;
+        if (firstIndex === null || baseIndex === null) {
+            return null;
         }
 
-        // TODO: reset only coords in case when this._visibleBars has not been changed
-		this._resetTimeMarksCache();
-    }
-
-    private _resetTimeMarksCache(): void {
-        this._timeMarksCache = null;
-    }
-
-    private _validateTickMarks(): void {
-        this._resetTimeMarksCache();
-        this._formattedBySpan.clear();
-    }
-
-    private _updateDateTimeFormatter(): void {
-        const dateFormat = this._localizationOptions.dateFormat;
-
-        if(this._options.timeVisible) {
-            this._dateTimeFormatter = new DateTimeFormatter({
-                dateFormat,
-                timeFormat: this._options.secondsVisible ? '%h:%m:%s' : '%h:%m',
-                dateTimeSeparator: '   ',
-                locale: this._localizationOptions.locale
-            });
-        } else {
-            this._dateTimeFormatter = new DateFormatter(dateFormat, this._localizationOptions.locale);
+        if (this._leftEdgeIndex !== null) {
+            const barsEstimation = this._width / this._barSpacing;
+            return this._leftEdgeIndex - baseIndex + barsEstimation - 1;
         }
+
+        return firstIndex - baseIndex - 1 + Constants.MinVisibleBarsCount;
+    }
+
+    private _maxRightOffset(): number {
+        return (this._width / this._barSpacing) - Constants.MinVisibleBarsCount;
+    }
+
+    private _saveCommonTransitionsStartState(): void {
+        this._commonTransitionStartState = {
+            barSpacing: this.barSpacing(),
+            rightOffset: this.rightOffset(),
+        };
     }
 
     private _clearCommonTransitionsStartState(): void {
         this._commonTransitionStartState = null;
     }
 
-    private _saveCommonTransitionsStartState(): void {
-        this._commonTransitionStartState = {
-            barSpacing: this.barSpacing(),
-            rightOffset: this.rightOffset()
-        };
-    }
-
     private _formatLabel(time: TimePoint, span: number): string {
         let formatter = this._formattedBySpan.get(span);
-        if(formatter === undefined) {
+        if (formatter === undefined) {
             formatter = new LabelCache((date: Date) => {
-                return this._formatLabelImpl(date, span)
+                return this._formatLabelImpl(date, span);
             });
 
             this._formattedBySpan.set(span, formatter);
         }
 
-        if(time.businessDay === undefined) {
+        if (time.businessDay === undefined) {
             return formatter.format(new Date(time.timestamp * 1000));
         } else {
             return formatter.format(new Date(Date.UTC(time.businessDay.year, time.businessDay.month - 1, time.businessDay.day)));
@@ -745,14 +683,54 @@ export class TimeScale {
 
         return localDateFromUtc.toLocaleString(this._localizationOptions.locale, formatOptions);
     }
+
+    private _setVisibleBars(visibleBars: BarsRange | null): void {
+        if (visibleBars === null && this._visibleBars === null) {
+            return;
+        }
+
+        const oldVisibleBars = this._visibleBars;
+        this._visibleBars = visibleBars;
+
+        if (this._visibleBars === null || oldVisibleBars !== null && !this._visibleBars.equals(oldVisibleBars)) {
+            this._visibleBarsChanged.fire();
+        }
+
+        // TODO: reset only coords in case when this._visibleBars has not been changed
+        this._resetTimeMarksCache();
+    }
+
+    private _resetTimeMarksCache(): void {
+        this._timeMarksCache = null;
+    }
+
+    private _invalidateTickMarks(): void {
+        this._resetTimeMarksCache();
+        this._formattedBySpan.clear();
+    }
+
+    private _updateDateTimeFormatter(): void {
+        const dateFormat = this._localizationOptions.dateFormat;
+
+        if (this._options.timeVisible) {
+            this._dateTimeFormatter = new DateTimeFormatter({
+                dateFormat: dateFormat,
+                timeFormat: this._options.secondsVisible ? '%h:%m:%s' : '%h:%m',
+                dateTimeSeparator: '   ',
+                locale: this._localizationOptions.locale,
+            });
+        } else {
+            this._dateTimeFormatter = new DateFormatter(dateFormat, this._localizationOptions.locale);
+        }
+    }
 }
 
 function getValidBarSpacing(newBarSpacing: number): number {
-    if(newBarSpacing < Constants.MinBarSpacing) {
+    if (newBarSpacing < Constants.MinBarSpacing) {
         return Constants.MinBarSpacing;
     }
 
-    if(newBarSpacing > Constants.MaxBarSpacing) {
+    if (newBarSpacing > Constants.MaxBarSpacing) {
         return Constants.MaxBarSpacing;
     }
 

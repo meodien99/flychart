@@ -15,18 +15,18 @@ export abstract class LinePaneViewBase<ItemType extends PricedValue & TimedValue
     }
 
     protected _convertToCoordinates(priceScale: PriceScale, timeScale: TimeScale, firstValue: number): void {
-        timeScale.indexesToCoordinates(this._items, undefinedIfNull(this._itemVisibleRange));
-        priceScale.pointsArrayToCoordinates(this._items, firstValue, undefinedIfNull(this._itemVisibleRange));
+        timeScale.indexesToCoordinates(this._items, undefinedIfNull(this._itemsVisibleRange));
+        priceScale.pointsArrayToCoordinates(this._items, firstValue, undefinedIfNull(this._itemsVisibleRange));
     }
 
     protected abstract _createRawItem(time: TimePointIndex, price: BarPrice, colorer: SeriesBarColorer): ItemType;
 
     protected _createRawItemBase(time: TimePointIndex, price: BarPrice): PricedValue & TimedValue {
         return {
-            time,
-            price,
+            time: time,
+            price: price,
             x: NaN as Coordinate,
-            y: NaN as Coordinate
+            y: NaN as Coordinate,
         };
     }
 
@@ -34,6 +34,7 @@ export abstract class LinePaneViewBase<ItemType extends PricedValue & TimedValue
         const barValueGetter = this._series.barFunction();
         const newItems: ItemType[] = [];
         const colorer = this._series.barColorer();
+        console.warn('this._series.bars()', this._series.bars())
 
         this._series.bars().each((index: TimePointIndex, bar: Bar) => {
             const value = barValueGetter(bar.value);

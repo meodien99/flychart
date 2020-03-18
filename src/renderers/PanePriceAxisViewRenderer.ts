@@ -1,4 +1,4 @@
-import {IPaneRenderer} from './ipane-renderer';
+import { IPaneRenderer } from './ipane-renderer';
 import { IPriceAxisViewRenderer, PriceAxisViewRendererOptions } from './iprice-axis-view-renderer';
 import { TextWidthCache } from '../models/TextWidthCache';
 

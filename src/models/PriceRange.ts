@@ -61,7 +61,7 @@ export class PriceRange {
  		this._maxValue = max;
     }
 
-    public scaleArroundCenter(coeff: number): void {
+    public scaleAroundCenter(coeff: number): void {
         if(!isNumber(coeff))
             return;
 

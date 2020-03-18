@@ -20,13 +20,11 @@ export class SeriesPriceLinePaneView extends SeriesHorizontalLinePaneView {
             return;
         } 
 
-        if(data.noData === false) {
-            this._lineRendererData.visible = true;
-            this._lineRendererData.y = data.coordinate;
-            this._lineRendererData.color = this._series.priceLineColor(data.color);
-            this._lineRendererData.width = this._model.timeScale().width();
-            this._lineRendererData.height = this._series.priceScale().height();
-            this._lineRendererData.lineWidth = this._series.options().priceLineWidth;
-        }
+        this._lineRendererData.visible = true;
+        this._lineRendererData.y = data.coordinate;
+        this._lineRendererData.color = this._series.priceLineColor(data.color);
+        this._lineRendererData.width = this._model.timeScale().width();
+        this._lineRendererData.height = this._series.priceScale().height();
+        this._lineRendererData.lineWidth = this._series.options().priceLineWidth;
     }
 }

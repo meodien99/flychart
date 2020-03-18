@@ -3,17 +3,16 @@ import { TextWidthCache } from "../models/TextWidthCache";
 import { resetTransparency } from "../helpers/colors";
 
 export class PriceAxisViewRenderer implements IPriceAxisViewRenderer {
-    private _data: PriceAxisViewRendererData;
-    private _commonData: PriceAxisViewRendererCommonData;
+    private _data!: PriceAxisViewRendererData;
+    private _commonData!: PriceAxisViewRendererCommonData;
 
-    public constructor(data: PriceAxisViewRendererData, commondData: PriceAxisViewRendererCommonData) {
-        this._data = data;
-        this._commonData = commondData;
+    public constructor(data: PriceAxisViewRendererData, commonData: PriceAxisViewRendererCommonData) {
+        this.setData(data, commonData);
     }
 
-    public setData(data: PriceAxisViewRendererData, commondData: PriceAxisViewRendererCommonData): void {
+    public setData(data: PriceAxisViewRendererData, commonData: PriceAxisViewRendererCommonData): void {
         this._data = data;
-        this._commonData = commondData;
+        this._commonData = commonData;
     }
 
     public draw(
@@ -23,7 +22,7 @@ export class PriceAxisViewRenderer implements IPriceAxisViewRenderer {
         width: number,
         align: 'left' | 'right'
     ): void {
-        if(!this._data.visible) {
+        if (!this._data.visible) {
             return;
         }
 
@@ -32,50 +31,52 @@ export class PriceAxisViewRenderer implements IPriceAxisViewRenderer {
 
         const tickSize = this._data.tickVisible ? rendererOptions.tickLength : 0;
         const horzBorder = this._data.borderVisible ? rendererOptions.borderSize : 0;
- 		const paddingTop = rendererOptions.paddingTop;
- 		const paddingBottom = rendererOptions.paddingBottom;
- 		const paddingInner = rendererOptions.paddingInner;
- 		const paddingOuter = rendererOptions.paddingOuter;
- 		const text = this._data.text;
- 		const textWidth = Math.ceil(textWidthCache.measureText(ctx, text));
- 		const baselineOffset = rendererOptions.baselineOffset;
- 		const totalHeight = rendererOptions.fontSize + paddingTop + paddingBottom;
+        const paddingTop = rendererOptions.paddingTop;
+        const paddingBottom = rendererOptions.paddingBottom;
+        const paddingInner = rendererOptions.paddingInner;
+        const paddingOuter = rendererOptions.paddingOuter;
+        const text = this._data.text;
+        const textWidth = Math.ceil(textWidthCache.measureText(ctx, text));
+        const baselineOffset = rendererOptions.baselineOffset;
+        const totalHeight = rendererOptions.fontSize + paddingTop + paddingBottom;
         const totalWidth = horzBorder + textWidth + paddingInner + paddingOuter + tickSize;
-        
-        const yMid = this._commonData.fixedCoordinate || this._commonData.coordinate;
-        const yTop = yMid - Math.floor(fontSize/2) - paddingTop - 0.5;
+
+        let yMid = this._commonData.coordinate;
+        if (this._commonData.fixedCoordinate) {
+            yMid = this._commonData.fixedCoordinate;
+        }
+
+        const yTop = yMid - Math.floor(fontSize / 2) - paddingTop - 0.5;
         const yBottom = yTop + totalHeight;
 
-        const isAlignRight = align === 'right';
-        
-        const xInside = isAlignRight ? width - horzBorder - 0.5 : 0.5;
+        const alignRight = align === 'right';
 
-        let xOutside = xInside, xTick, xText;
+        const xInside = alignRight ? width - horzBorder - 0.5 : 0.5;
+
+        let xOutside = xInside;
+        let xTick;
+        let xText;
 
         ctx.fillStyle = resetTransparency(this._commonData.background);
         ctx.lineWidth = 1;
         ctx.lineCap = 'butt';
 
-        if(text) {
-            if(isAlignRight) {
-                /**
-                 * 2            1
-                 *              
-                 *            6 5
-                 * 
-                 * 3            4
-                 */
+        if (text) {
+            if (alignRight) {
+                // 2               1
+                //
+                //              6  5
+                //
+                // 3               4
                 xOutside = xInside - totalWidth;
                 xTick = xInside - tickSize;
                 xText = xOutside + paddingOuter;
             } else {
-                /**
-                 * 2            1
-                 *              
-                 * 6 5
-                 * 
-                 * 3            4
-                 */
+                // 1               2
+                //
+                // 6  5
+                //
+                // 4               3
                 xOutside = xInside + totalWidth;
                 xTick = xInside + tickSize;
                 xText = xInside + horzBorder + tickSize + paddingInner;
@@ -88,7 +89,7 @@ export class PriceAxisViewRenderer implements IPriceAxisViewRenderer {
             ctx.lineTo(xInside, yBottom);
             ctx.fill();
 
-            if(this._data.tickVisible) {
+            if (this._data.tickVisible) {
                 ctx.beginPath();
                 ctx.strokeStyle = this._commonData.color;
                 ctx.moveTo(xInside, yMid);
@@ -104,7 +105,7 @@ export class PriceAxisViewRenderer implements IPriceAxisViewRenderer {
     }
 
     public height(rendererOptions: PriceAxisViewRendererOptions, useSecondLine: boolean): number {
-        if(!this._data.visible) {
+        if (!this._data.visible) {
             return 0;
         }
 

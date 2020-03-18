@@ -1,6 +1,5 @@
 {
 	"compilerOptions": {
-		"sourceMap": true,
 		"allowSyntheticDefaultImports": true,
 		"declaration": true,
 		"importHelpers": true,
@@ -13,31 +12,19 @@
 			"es2016.array.include",
 			"es5"
 		],
-		// "module": "esnext",
-		"module": "commonjs",
+		"module": "esnext",
 		"moduleResolution": "node",
 		"noEmitOnError": true,
 		"noFallthroughCasesInSwitch": true,
 		"noImplicitReturns": true,
 		"noUnusedLocals": true,
 		"outDir": "lib",
-		"plugins": [
-			{
-				"transform": "ts-transformer-minify-privates"
-			}
-		],
 		"preserveConstEnums": true,
 		"resolveJsonModule": true,
 		"rootDir": "./",
 		"strict": true,
 		"stripInternal": true,
 		"target": "es5",
-		"typeRoots": [
-			"./src/types",
-			"node_modules/@types"
-		],
-		"types": [
-			"_global-types"
-		]
+		"types": []
 	}
 }

@@ -18,12 +18,12 @@ export interface PaneRendererLineData {
 export class PaneRendererLine implements IPaneRenderer {
     protected _data: PaneRendererLineData | null = null;
 
-    public setData(data: PaneRendererLineData) {
+    public setData(data: PaneRendererLineData): void {
         this._data = data;
     }
 
     public draw(ctx: CanvasRenderingContext2D): void {
-        if(this._data === null || this._data.items.length === 0 || this._data.visibleRange === null) {
+        if (this._data === null || this._data.items.length === 0 || this._data.visibleRange === null) {
             return;
         }
 

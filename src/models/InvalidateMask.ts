@@ -11,13 +11,13 @@ export type PaneInvalidation = {
 }
 
 function mergePaneInvalidation(beforeValue: PaneInvalidation | undefined, newValue: PaneInvalidation): PaneInvalidation {
-    if(beforeValue === newValue)
+    if (beforeValue === newValue)
         return newValue;
 
     const level = Math.max(beforeValue === undefined ? 0 : beforeValue.level, newValue.level);
     const autoScale = (beforeValue === undefined ? false : beforeValue.autoScale) || newValue.autoScale;
 
-    return {level, autoScale};
+    return { level, autoScale };
 }
 
 export class InvalidateMask {
@@ -33,7 +33,6 @@ export class InvalidateMask {
     public invalidatePane(paneIndex: number, invalidation: PaneInvalidation): void {
         const prevValue = this._invalidatedPanes.get(paneIndex);
         const newValue = mergePaneInvalidation(prevValue, invalidation);
-
         this._invalidatedPanes.set(paneIndex, newValue);
     }
 
@@ -47,7 +46,7 @@ export class InvalidateMask {
 
     public invalidateForPane(paneIndex: number): PaneInvalidation {
         const paneInvalidation = this._invalidatedPanes.get(paneIndex);
-        if(paneInvalidation === undefined) {
+        if (paneInvalidation === undefined) {
             return {
                 level: this._globalLevel
             }
@@ -70,7 +69,7 @@ export class InvalidateMask {
     public merge(other: InvalidateMask): void {
         this._force = this._force || other._force;
         this._fitContent = this._fitContent || other._fitContent;
-        this._globalLevel = this._globalLevel || other._globalLevel;
+        this._globalLevel = Math.max(this._globalLevel, other._globalLevel);
         other._invalidatedPanes.forEach((invalidation: PaneInvalidation, index: number) => {
             this.invalidatePane(index, invalidation);
         });

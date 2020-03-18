@@ -17,13 +17,14 @@ export class SeriesLinePaneView extends LinePaneViewBase<LineItem> {
         this._makeValid();
 
         const lineStyleProps = this._series.options().lineStyle;
+
         const data: PaneRendererLineData = {
             items: this._items,
             lineColor: lineStyleProps.color,
             lineStyle: lineStyleProps.lineStyle,
             lineType: 0,
             lineWidth: lineStyleProps.lineWidth,
-            visibleRange: this._itemVisibleRange
+            visibleRange: this._itemsVisibleRange,
         };
 
         this._lineRenderer.setData(data);

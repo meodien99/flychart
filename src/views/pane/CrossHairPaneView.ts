@@ -14,20 +14,19 @@ export class CrossHairPaneView implements IPaneView {
             lineWidth: 1,
             lineStyle: LineStyle.Solid,
             color: '',
-            visible: false
+            visible: false,
         },
         horzLine: {
             lineWidth: 1,
             lineStyle: LineStyle.Solid,
             color: '',
-            visible: false
+            visible: false,
         },
         w: 0,
         h: 0,
         x: 0,
-        y: 0
+        y: 0,
     };
-
     private _renderer: CrossHairRenderer = new CrossHairRenderer(this._rendererData);
 
     public constructor(source: CrossHair) {
@@ -39,7 +38,7 @@ export class CrossHairPaneView implements IPaneView {
     }
 
     public renderer(height: number, width: number): IPaneRenderer {
-        if(this._invalidated) {
+        if (this._invalidated) {
             this._updateImpl();
         }
 
@@ -53,17 +52,17 @@ export class CrossHairPaneView implements IPaneView {
 
         const data = this._rendererData;
 
-        data.horzLine.visible = visible && this._source.horizLineVisible(pane);
+        data.horzLine.visible = visible && this._source.horzLineVisible(pane);
         data.vertLine.visible = visible && this._source.vertLineVisible();
 
-        data.horzLine.lineWidth = crossHairOptions.vertLine.width;
+        data.horzLine.lineWidth = crossHairOptions.horzLine.width;
         data.horzLine.lineStyle = crossHairOptions.horzLine.style;
- 		data.horzLine.color = crossHairOptions.horzLine.color;
+        data.horzLine.color = crossHairOptions.horzLine.color;
 
- 		data.vertLine.lineWidth = crossHairOptions.vertLine.width;
- 		data.vertLine.lineStyle = crossHairOptions.vertLine.style;
+        data.vertLine.lineWidth = crossHairOptions.vertLine.width;
+        data.vertLine.lineStyle = crossHairOptions.vertLine.style;
         data.vertLine.color = crossHairOptions.vertLine.color;
-         
+
         data.w = pane.width();
         data.h = pane.height();
 

@@ -25,14 +25,14 @@ export class CrossHairRenderer implements IPaneRenderer {
     }
 
     public draw(ctx: CanvasRenderingContext2D): void {
-        if(this._data === null) {
+        if (this._data === null) {
             return;
         }
 
         const vertLinesVisible = this._data.vertLine.visible;
         const horzLinesVisible = this._data.horzLine.visible;
 
-        if(!vertLinesVisible && !horzLinesVisible) {
+        if (!vertLinesVisible && !horzLinesVisible) {
             return;
         }
 
@@ -44,14 +44,14 @@ export class CrossHairRenderer implements IPaneRenderer {
         const w = this._data.w;
         const h = this._data.h;
 
-        if(vertLinesVisible && x >= 0) {
+        if (vertLinesVisible && x >= 0) {
             ctx.lineWidth = this._data.vertLine.lineWidth;
             ctx.strokeStyle = this._data.vertLine.color;
             ctx.fillStyle = this._data.vertLine.color;
             drawLine(ctx, x, 0, x, h, this._data.vertLine.lineStyle);
         }
 
-        if(horzLinesVisible && y >= 0) {
+        if (horzLinesVisible && y >= 0) {
             ctx.lineWidth = this._data.horzLine.lineWidth;
             ctx.strokeStyle = this._data.horzLine.color;
             ctx.fillStyle = this._data.horzLine.color;

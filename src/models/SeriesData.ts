@@ -1,4 +1,4 @@
-import {barFunctions, Bar, BarFunction} from './bar';
+import { barFunctions, Bar, BarFunction } from './bar';
 import { TimePoint, TimePointIndex } from "./time-data";
 import { PlotList, PlotFunctionMap, EnumeratingFunction, PlotRowSearchMode } from './PlotList';
 import { PlotRow } from './plot-data';
@@ -32,7 +32,7 @@ function seriesPlotFunctionMap(): PlotFunctionMap<Bar['value']> {
     seriesSource.forEach((plot: keyof typeof barFunctions) => {
         result.set(plot, barFunction(plot));
     });
-    
+
     return result;
 }
 

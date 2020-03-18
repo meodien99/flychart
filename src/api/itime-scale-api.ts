@@ -10,7 +10,7 @@ export interface TimeRange {
 export interface ITimeScaleApi {
     scrollPosition(): number;
     scrollToPosition(position: number, animated: boolean): void;
-    scrollToRealtime(): void;
+    scrollToRealTime(): void;
 
     getVisibleRange(): TimeRange | null;
     setVisibleRange(range: TimeRange): void;
