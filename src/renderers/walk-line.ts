@@ -19,5 +19,7 @@ export function walkLine(ctx:CanvasRenderingContext2D, points: ReadonlyArray<Lin
             const currX = currItem.x;
             ctx.lineTo(prevX, currX);
         }
+
+        ctx.lineTo(currItem.x, currItem.y);
     }
 }

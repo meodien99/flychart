@@ -32,9 +32,9 @@ export class CrossHairMarksPaneView implements IUpdatablePaneView {
     private readonly _crossHair: CrossHair;
     private readonly _compositeRenderer: CompositeRenderer = new CompositeRenderer();
     private _markersRenderers: PaneMarksRenderer[] = [];
- 	private _markersData: MarksRendererData[] = [];
+    private _markersData: MarksRendererData[] = [];
     private _invalidated: boolean = true;
-     
+
     public constructor(chartModel: ChartModel, crossHair: CrossHair) {
         this._chartModel = chartModel;
         this._crossHair = crossHair;
@@ -43,14 +43,13 @@ export class CrossHairMarksPaneView implements IUpdatablePaneView {
 
     public update(updateType?: UpdateType): void {
         const serieses = this._chartModel.serieses();
-        if(serieses.length !== this._markersRenderers.length) {
+        if (serieses.length !== this._markersRenderers.length) {
             this._markersData = serieses.map(() => createEmptyMarkerData(this._chartModel.options()));
             this._markersRenderers = this._markersData.map((data: MarksRendererData) => {
                 const res = new PaneMarksRenderer();
                 res.setData(data);
                 return res;
             });
-
             this._compositeRenderer.setRenderers(this._markersRenderers);
         }
 
@@ -58,7 +57,7 @@ export class CrossHairMarksPaneView implements IUpdatablePaneView {
     }
 
     public renderer(height: number, width: number, addAnchors?: boolean): IPaneRenderer | null {
-        if(this._invalidated) {
+        if (this._invalidated) {
             this._updateImpl();
             this._invalidated = false;
         }
@@ -71,23 +70,21 @@ export class CrossHairMarksPaneView implements IUpdatablePaneView {
         const timePointIndex = this._crossHair.appliedIndex();
         const timeScale = this._chartModel.timeScale();
 
-        serieses.forEach((s: Series, index: number)=> {
+        serieses.forEach((s: Series, index: number) => {
             const data = this._markersData[index];
             const seriesData = s.markerDataAtIndex(timePointIndex);
 
-            if(seriesData === null) {
+            if (seriesData === null) {
                 data.visibleRange = null;
             } else {
                 const firstValue = ensureNotNull(s.firstValue());
                 data.lineColor = s.barColorer().barStyle(timePointIndex).barColor;
                 data.backColor = this._chartModel.options().layout.backgroundColor;
                 data.radius = seriesData.radius;
-
                 data.items[0].price = seriesData.price;
+                data.items[0].y = s.priceScale().priceToCoordinate(seriesData.price, firstValue);
                 data.items[0].time = timePointIndex;
                 data.items[0].x = timeScale.indexToCoordinate(timePointIndex);
-                data.items[0].y = s.priceScale().priceToCoordinate(seriesData.price, firstValue);
-
                 data.visibleRange = rangeForSinglePoint;
             }
         });

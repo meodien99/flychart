@@ -146,17 +146,13 @@ export class DataLayer {
     public setSeriesData(series: Series, data: TimedData[], palette?: Palette): UpdatePacket {
         convertStringsToBusinessDays(data);
         this._pointDataByTimePoint.forEach((value: TimePointData) => value.mapping.delete(series));
-        
         const timeConverter = selectTimeConverter(data);
-
-        if(timeConverter !== null) {
+        if (timeConverter !== null) {
             data.forEach((item: TimedData) => {
                 const time = timeConverter(item.time);
                 const timePointData: TimePointData = this._pointDataByTimePoint.get(time.timestamp) ||
-                    {index: 0 as TimePointIndex, mapping: new Map<Series, TimedData>(), timePoint: time };
-                
+                    { index: 0 as TimePointIndex, mapping: new Map<Series, TimedData>(), timePoint: time };
                 timePointData.mapping.set(series, item);
-
                 this._pointDataByTimePoint.set(time.timestamp, timePointData);
             });
         }
@@ -164,7 +160,7 @@ export class DataLayer {
         // remove from points items without series
         const newPoints = new Map<UTCTimestamp, TimePointData>();
         this._pointDataByTimePoint.forEach((pointData: TimePointData, key: UTCTimestamp) => {
-            if(pointData.mapping.size > 0) {
+            if (pointData.mapping.size > 0) {
                 newPoints.set(key, pointData);
             }
         });
@@ -180,66 +176,64 @@ export class DataLayer {
         // check types
         convertStringToBusinessDay(data);
         const bars = series.data().bars();
-
-        if(bars.size() > 0) {
+        if (bars.size() > 0) {
             const lastTime = ensureNotNull<PlotRow<any, any>>(bars.last()).time;
-            if(lastTime.businessDay !== undefined) {
+            if (lastTime.businessDay !== undefined) {
                 // time must be BusinessDay
-                if(!isBusinessDay(data.time)) {
+                if (!isBusinessDay(data.time)) {
                     throw new Error('time must be of type BusinessDay');
                 }
             } else {
-                if(!isUTCTimestamp(data.time)) {
+                if (!isUTCTimestamp(data.time)) {
                     throw new Error('time must be of type isUTCTimestamp');
                 }
             }
         }
 
         const changedTimePointTime = ensureNotNull<TimeConverter>(selectTimeConverter([data]))(data.time);
-        
+
         const pointData: TimePointData = this._pointDataByTimePoint.get(changedTimePointTime.timestamp) ||
- 			{ index: 0 as TimePointIndex, mapping: new Map<Series, TimedData>(), timePoint: changedTimePointTime };
- 		const newPoint = pointData.mapping.size === 0;
- 		pointData.mapping.set(series, data);
- 		let updateAllSeries = false;
- 		if (newPoint) {
- 			let index = this._pointDataByTimePoint.size as TimePointIndex;
- 			if (this._sortedTimePoints.length > 0 && this._sortedTimePoints[this._sortedTimePoints.length - 1].timestamp > changedTimePointTime.timestamp) {
- 				// new point in the middle
- 				index = upperbound(this._sortedTimePoints, changedTimePointTime, compareTimePoints) as TimePointIndex;
- 				this._sortedTimePoints.splice(index, 0, changedTimePointTime);
- 				this._incrementIndicesFrom(index);
- 				updateAllSeries = true;
- 			} else {
- 				// new point in the end
- 				this._sortedTimePoints.push(changedTimePointTime);
- 			}
+            { index: 0 as TimePointIndex, mapping: new Map<Series, TimedData>(), timePoint: changedTimePointTime };
+        const newPoint = pointData.mapping.size === 0;
+        pointData.mapping.set(series, data);
+        let updateAllSeries = false;
+        if (newPoint) {
+            let index = this._pointDataByTimePoint.size as TimePointIndex;
+            if (this._sortedTimePoints.length > 0 && this._sortedTimePoints[this._sortedTimePoints.length - 1].timestamp > changedTimePointTime.timestamp) {
+                // new point in the middle
+                index = upperbound(this._sortedTimePoints, changedTimePointTime, compareTimePoints) as TimePointIndex;
+                this._sortedTimePoints.splice(index, 0, changedTimePointTime);
+                this._incrementIndicesFrom(index);
+                updateAllSeries = true;
+            } else {
+                // new point in the end
+                this._sortedTimePoints.push(changedTimePointTime);
+            }
 
- 			pointData.index = index;
- 			this._timePointsByIndex.set(pointData.index, changedTimePointTime);
+            pointData.index = index;
+            this._timePointsByIndex.set(pointData.index, changedTimePointTime);
         }
-        
         this._pointDataByTimePoint.set(changedTimePointTime.timestamp, pointData);
- 		const seriesUpdates: Map<Series, SeriesUpdatePacket> = new Map();
+        const seriesUpdates: Map<Series, SeriesUpdatePacket> = new Map();
 
- 		for (let index = pointData.index; index < this._pointDataByTimePoint.size; ++index) {
- 			const timePoint = ensureDefined(this._timePointsByIndex.get(index));
- 			const currentIndexData = ensureDefined(this._pointDataByTimePoint.get(timePoint.timestamp));
- 			currentIndexData.mapping.forEach((currentData: TimedData, currentSeries: Series) => {
- 				if (!updateAllSeries && currentSeries !== series) {
- 					return;
- 				}
+        for (let index = pointData.index; index < this._pointDataByTimePoint.size; ++index) {
+            const timePoint = ensureDefined(this._timePointsByIndex.get(index));
+            const currentIndexData = ensureDefined(this._pointDataByTimePoint.get(timePoint.timestamp));
+            currentIndexData.mapping.forEach((currentData: TimedData, currentSeries: Series) => {
+                if (!updateAllSeries && currentSeries !== series) {
+                    return;
+                }
 
- 				const packet = seriesUpdates.get(currentSeries) || newSeriesUpdatePacket();
- 				const seriesUpdate: PlotRow<Bar['time'], Bar['value']> = {
- 					index,
- 					time: timePoint,
- 					value: getItemValues(currentData, palette),
- 				};
- 				packet.update.push(seriesUpdate);
- 				seriesUpdates.set(currentSeries, packet);
- 			});
- 		}
+                const packet = seriesUpdates.get(currentSeries) || newSeriesUpdatePacket();
+                const seriesUpdate: PlotRow<Bar['time'], Bar['value']> = {
+                    index,
+                    time: timePoint,
+                    value: getItemValues(currentData, palette),
+                };
+                packet.update.push(seriesUpdate);
+                seriesUpdates.set(currentSeries, packet);
+            });
+        }
 
         const marks: TickMarkPacket[] = newPoint ? this._generateMarksSinceIndex(pointData.index) : [];
         const timePointChanges = newPoint ? this._sortedTimePoints.slice(pointData.index) : [];
@@ -254,13 +248,6 @@ export class DataLayer {
         return {
             timeScaleUpdate,
         };
-    }
-
-    private _rebuildTimePointsByIndex(): void {
-        this._timePointsByIndex.clear();
-        this._pointDataByTimePoint.forEach((data: TimePointData, timePoint: UTCTimestamp) => {
-            this._timePointsByIndex.set(data.index, data.timePoint);
-        });
     }
 
     private _setNewPoints(newPoints: Map<UTCTimestamp, TimePointData>, palette?: Palette): UpdatePacket {
@@ -320,6 +307,13 @@ export class DataLayer {
             this._timePointsByIndex.delete(indexToUpdate);
             this._timePointsByIndex.set(newIndex, timePoint);
         }
+    }
+
+    private _rebuildTimePointsByIndex(): void {
+        this._timePointsByIndex.clear();
+        this._pointDataByTimePoint.forEach((data: TimePointData, timePoint: UTCTimestamp) => {
+            this._timePointsByIndex.set(data.index, data.timePoint);
+        });
     }
 
     private _generateMarksSinceIndex(startIndex: TimePointIndex): TickMarkPacket[] {

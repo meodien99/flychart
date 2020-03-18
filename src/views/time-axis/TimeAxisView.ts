@@ -15,8 +15,8 @@ export abstract class TimeAxisView {
     }
 
     public color(): string {
-        const bgBW = rgbToBlackWhiteString(parseRgb(this._background), 150);
-        return bgBW === 'black' ? 'white' : 'black';
+        const backgroundBW = rgbToBlackWhiteString(parseRgb(this._background), 150);
+        return backgroundBW === 'black' ? 'white' : 'black';
     }
 
     public coordinate(): number {

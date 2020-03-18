@@ -16,7 +16,7 @@ export class CrossHairTimeAxisView extends TimeAxisView {
         color: 'white',
         text: '',
         width: 0,
-        coordinate: NaN
+        coordinate: NaN,
     };
 
     public constructor(crossHair: CrossHair, model: ChartModel, valueProvider: TimeAndCoordinateProvider) {
@@ -29,12 +29,12 @@ export class CrossHairTimeAxisView extends TimeAxisView {
 
     public update(): void {
         this._invalidated = true;
-    }    
+    }
 
     public renderer(): TimeAxisViewRenderer {
         if(this._invalidated) {
             this._updateImpl();
-            this._invalidated = true;
+            this._invalidated = false;
         }
 
         this._renderer.setData(this._rendererData);
@@ -42,7 +42,7 @@ export class CrossHairTimeAxisView extends TimeAxisView {
         return this._renderer;
     }
 
-    public _updateImpl(): void {
+    private _updateImpl(): void {
         const data = this._rendererData;
         data.visible = false;
 

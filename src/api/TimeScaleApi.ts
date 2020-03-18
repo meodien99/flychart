@@ -8,7 +8,7 @@ import { TimeRange, ITimeScaleApi } from "./itime-scale-api";
 import { IDestroyable } from "../helpers/idestroyable";
 import { ChartModel } from "../models/Chart";
 
- const enum Constants {
+const enum Constants {
     AnimationDurationMs = 1000,
 }
 
@@ -36,7 +36,7 @@ export class TimeScaleApi implements ITimeScaleApi, IDestroyable {
         this._timeScale().scrollToOffsetAnimated(position, Constants.AnimationDurationMs);
     }
 
-    public scrollToRealTime(): void {
+    public scrollToRealtime(): void {
         this._timeScale().scrollToRealTime();
     }
 

@@ -28,5 +28,5 @@ export function createChart(container: string | HTMLElement, options?: DeepParti
         clone(chartOptionsDefaults) :
         merge(clone(chartOptionsDefaults), options) as ChartOptions;
 
-        return new ChartApi(htmlElement, chartOptions);
+    return new ChartApi(htmlElement, chartOptions);
 }

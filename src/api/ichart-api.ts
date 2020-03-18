@@ -23,6 +23,8 @@ export interface IChartApi {
 
     addLineSeries(lineParams?: DeepPartial<LineSeriesParams>): ILineSeriesApi;
 
+	removeSeries(seriesApi: ISeriesApi): void;
+
     subscribeClick(handler: MouseEventHandler): void;
  	unsubscribeClick(handler: MouseEventHandler): void;
 

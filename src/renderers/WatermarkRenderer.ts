@@ -29,21 +29,20 @@ export class WatermarkRenderer implements IPaneRenderer {
         this._data = data;
     }
 
-    public draw(ctx: CanvasRenderingContext2D, isHovered: boolean): void {
-
+    public draw(ctx: CanvasRenderingContext2D): void {
     }
 
     public drawBackground(ctx: CanvasRenderingContext2D): void {
-        if(!this._data.visible) {
+        if (!this._data.visible) {
             return;
         }
-
         ctx.save();
 
         let textHeight = 0;
-        for(const line of this._data.lines) {
-            if(line.text.length === 0)
+        for (const line of this._data.lines) {
+            if (line.text.length === 0) {
                 continue;
+            }
 
             ctx.font = line.font;
             const textWidth = this._metrics(ctx, line.text);
@@ -57,75 +56,73 @@ export class WatermarkRenderer implements IPaneRenderer {
         }
 
         let vertOffset = 0;
-        switch(this._data.vertAlign) {
-            case 'top': {
+        switch (this._data.vertAlign) {
+            case 'top':
                 vertOffset = 0;
                 break;
-            }
-            case 'center': {
-                vertOffset = Math.max((this._data.height - textHeight)/2, 0);
+
+            case 'center':
+                vertOffset = Math.max((this._data.height - textHeight) / 2, 0);
                 break;
-            }
-            case 'bottom': {
+
+            case 'bottom':
                 vertOffset = Math.max((this._data.height - textHeight), 0);
                 break;
-            }
         }
 
         ctx.fillStyle = this._data.color;
 
-        for(const line of this._data.lines) {
+        for (const line of this._data.lines) {
             ctx.save();
 
- 			let horzOffset = 0;
- 			switch (this._data.horzAlign) {
- 				case 'left':
- 					ctx.textAlign = 'left';
- 					horzOffset = line.lineHeight / 2;
- 					break;
+            let horzOffset = 0;
+            switch (this._data.horzAlign) {
+                case 'left':
+                    ctx.textAlign = 'left';
+                    horzOffset = line.lineHeight / 2;
+                    break;
 
- 				case 'center':
- 					ctx.textAlign = 'center';
- 					horzOffset = this._data.width / 2;
- 					break;
+                case 'center':
+                    ctx.textAlign = 'center';
+                    horzOffset = this._data.width / 2;
+                    break;
 
- 				case 'right':
- 					ctx.textAlign = 'right';
- 					horzOffset = this._data.width - 1 - line.lineHeight / 2;
- 					break;
- 			}
+                case 'right':
+                    ctx.textAlign = 'right';
+                    horzOffset = this._data.width - 1 - line.lineHeight / 2;
+                    break;
+            }
 
- 			ctx.translate(horzOffset, vertOffset);
- 			ctx.textBaseline = 'top';
- 			ctx.font = line.font;
- 			ctx.scale(line.zoom, line.zoom);
- 			ctx.fillText(line.text, 0, line.vertOffset);
- 			ctx.restore();
- 			vertOffset += line.lineHeight * line.zoom;
+            ctx.translate(horzOffset, vertOffset);
+            ctx.textBaseline = 'top';
+            ctx.font = line.font;
+            ctx.scale(line.zoom, line.zoom);
+            ctx.fillText(line.text, 0, line.vertOffset);
+            ctx.restore();
+            vertOffset += line.lineHeight * line.zoom;
         }
 
         ctx.restore();
     }
 
-    private _fontCache(font: string): Map<string, number> {
-        let fontCache = this._metricsCache.get(font);
-        if(fontCache === undefined) {
-            fontCache = new Map();
-            this._metricsCache.set(font, fontCache);
-        }
-
-        return fontCache;
-    }
-
     private _metrics(ctx: CanvasRenderingContext2D, text: string): number {
         const fontCache = this._fontCache(ctx.font);
         let result = fontCache.get(text);
-
-        if(result === undefined) {
+        if (result === undefined) {
             result = ctx.measureText(text).width;
             fontCache.set(text, result);
         }
 
         return result;
+    }
+
+    private _fontCache(font: string): Map<string, number> {
+        let fontCache = this._metricsCache.get(font);
+        if (fontCache === undefined) {
+            fontCache = new Map();
+            this._metricsCache.set(font, fontCache);
+        }
+
+        return fontCache;
     }
 }

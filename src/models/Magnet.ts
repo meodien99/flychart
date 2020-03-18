@@ -15,63 +15,62 @@ export class Magnet {
     }
 
     public align(price: number, index: TimePointIndex, pane: Pane): number {
-        if(this._options.mode = CrossHairMode.Normal)
-            return price;
+        let res = price;
+        if (this._options.mode === CrossHairMode.Normal) {
+            return res;
+        }
 
         const defaultPriceScale = pane.defaultPriceScale();
+        // get the main source
         const mainSource = defaultPriceScale.mainSource();
 
-        if(defaultPriceScale.isEmpty() || mainSource === null) {
-            return price;
+        if (defaultPriceScale.isEmpty() || mainSource === null) {
+            return res;
         }
 
         const firstValue = mainSource.firstValue();
-        if(firstValue === null) {
-            return price;
+        if (firstValue === null) {
+            return res;
         }
+
+        const y = defaultPriceScale.priceToCoordinate(price, firstValue);
 
         // get all serieses from the pane
         const serieses: ReadonlyArray<Series> = pane.dataSources().filter(
-            ((ds: IDataSource) => (ds instanceof Series)) as (ds: IDataSource) => ds is Series
-        );
+            ((ds: IDataSource) => (ds instanceof Series)) as (ds: IDataSource) => ds is Series);
 
-        const candinates = serieses.reduce(
+        const candidates = serieses.reduce(
             (acc: Coordinate[], series: Series) => {
-                if(pane.isOverlay(series))
+                if (pane.isOverlay(series)) {
                     return acc;
-
+                }
                 const ps = series.priceScale();
                 const bars = series.bars();
-
-                if(ps.isEmpty() || !bars.contains(index)) {
+                if (ps.isEmpty() || !bars.contains(index)) {
                     return acc;
                 }
 
                 const bar = bars.valueAt(index);
-                if(bar === null) {
+                if (bar === null) {
                     return acc;
                 }
-
                 const prices = [
-                    bar.value[SeriesPlotIndex.Close] as number
+                    bar.value[SeriesPlotIndex.Close] as number,
                 ];
 
-                // convert bar to pixel
+                // convert bar to pixels
                 const firstPrice = ensure(series.firstValue());
-
-                return acc.concat(prices.map((barPrice: number) => ps.priceToCoordinate(barPrice, firstPrice, true)))
+                return acc.concat(prices.map((barPrice: number) => ps.priceToCoordinate(barPrice, firstPrice, true)));
             },
-            [] as Coordinate[]
-        );
-        
-        if(candinates.length === 0)
-            return price;
+            [] as Coordinate[]);
 
-        let res = price;
-        const y = defaultPriceScale.priceToCoordinate(price, firstValue);
+        if (candidates.length === 0) {
+            return res;
+        }
 
-        candinates.sort((y1: Coordinate, y2: Coordinate) => Math.abs(y1 - y) - Math.abs(y2 - y));
-        const nearest = candinates[0];
+        candidates.sort((y1: Coordinate, y2: Coordinate) => Math.abs(y1 - y) - Math.abs(y2 - y));
+
+        const nearest = candidates[0];
         res = defaultPriceScale.coordinateToPrice(nearest, firstValue);
 
         return res;

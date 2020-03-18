@@ -14,7 +14,6 @@ export class SeriesPriceAxisView extends PriceAxisView {
 
     public constructor(source: Series, data: SeriesPriceAxisViewData) {
         super();
-
         this._source = source;
         this._data = data;
     }
@@ -27,10 +26,11 @@ export class SeriesPriceAxisView extends PriceAxisView {
         return this._data;
     }
 
+    // tslint:disable-next-line:cyclomatic-complexity
     protected _updateRendererData(
         axisRendererData: PriceAxisViewRendererData,
- 		paneRendererData: PriceAxisViewRendererData,
- 		commonRendererData: PriceAxisViewRendererCommonData
+        paneRendererData: PriceAxisViewRendererData,
+        commonRendererData: PriceAxisViewRendererCommonData
     ): void {
         axisRendererData.visible = false;
         paneRendererData.visible = false;
@@ -39,33 +39,31 @@ export class SeriesPriceAxisView extends PriceAxisView {
         const showSeriesLastValue = seriesOptions.lastValueVisible;
 
         const showSymbolLabel = this._source.title() !== '';
-        const showPriceAndPercent = seriesOptions.seriesLastValueMode === PriceAxisLastValueMode.LastPriceAndPercentageValue;
+        const showPriceAndPercentage = seriesOptions.seriesLastValueMode === PriceAxisLastValueMode.LastPriceAndPercentageValue;
 
         const lastValueData = this._source.lastValueData(undefined, false);
-        if(lastValueData.noData) {
+        if (lastValueData.noData) {
             return;
         }
 
-        if(lastValueData.noData === false) {
-            if(showSeriesLastValue) {
-                axisRendererData.text = this._axisText(lastValueData, showSeriesLastValue, showPriceAndPercent);
-                axisRendererData.visible = axisRendererData.text.length !== 0;
-            }
-    
-            if(showSymbolLabel || showPriceAndPercent) {
-                paneRendererData.text = this._paneText(lastValueData, showSeriesLastValue, showSymbolLabel, showPriceAndPercent);
-                paneRendererData.visible = paneRendererData.text.length > 0;
-            }
-    
-            commonRendererData.background = this._source.priceLineColor(lastValueData.color);
-            commonRendererData.color = this.generateTextColor(commonRendererData.background);
-            commonRendererData.coordinate = lastValueData.coordinate;
-            commonRendererData.floatCoordinate = lastValueData.floatCoordinate;
+        if (showSeriesLastValue) {
+            axisRendererData.text = this._axisText(lastValueData, showSeriesLastValue, showPriceAndPercentage);
+            axisRendererData.visible = axisRendererData.text.length !== 0;
         }
+
+        if (showSymbolLabel || showPriceAndPercentage) {
+            paneRendererData.text = this._paneText(lastValueData, showSeriesLastValue, showSymbolLabel, showPriceAndPercentage);
+            paneRendererData.visible = paneRendererData.text.length > 0;
+        }
+
+        commonRendererData.background = this._source.priceLineColor(lastValueData.color);
+        commonRendererData.color = this.generateTextColor(commonRendererData.background);
+        commonRendererData.coordinate = lastValueData.coordinate;
+        commonRendererData.floatCoordinate = lastValueData.floatCoordinate;
     }
 
     protected _paneText(
-        lastValueData: LastValueDataResultWithData,
+        lastValue: LastValueDataResultWithData,
         showSeriesLastValue: boolean,
         showSymbolLabel: boolean,
         showPriceAndPercentage: boolean
@@ -74,23 +72,19 @@ export class SeriesPriceAxisView extends PriceAxisView {
 
         const title = this._source.title();
 
-        if(showSymbolLabel && title.length !== 0) {
-            result += `${title}`;
+        if (showSymbolLabel && title.length !== 0) {
+            result += `${title} `;
         }
 
         if (showSeriesLastValue && showPriceAndPercentage) {
             result += this._source.priceScale().isPercentage() ?
-                lastValueData.formattedPriceAbsolute : lastValueData.formattedPricePercentage;
+                lastValue.formattedPriceAbsolute : lastValue.formattedPricePercentage;
         }
 
         return result.trim();
     }
 
-    protected _axisText(
-        lastValueData: LastValueDataResultWithData,
-        showSeriesLastValue: boolean,
-        showPriceAndPercentage: boolean
-    ): string {
+    protected _axisText(lastValueData: LastValueDataResultWithData, showSeriesLastValue: boolean, showPriceAndPercentage: boolean): string {
         if (!showSeriesLastValue) {
             return '';
         }

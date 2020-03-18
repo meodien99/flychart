@@ -10,7 +10,7 @@ export class CrossHairPriceAxisView extends PriceAxisView {
     private _background: string = '#4c525e';
     private readonly _priceScale: PriceScale;
     private readonly _valueProvider: CrossHairPriceAxisViewValueProvider;
-    
+
     public constructor(source: CrossHair, priceScale: PriceScale, valueProvider: CrossHairPriceAxisViewValueProvider) {
         super();
         this._source = source;
@@ -19,19 +19,18 @@ export class CrossHairPriceAxisView extends PriceAxisView {
     }
 
     protected _updateRendererData(
-        axisRendererData: PriceAxisViewRendererData, 
+        axisRendererData: PriceAxisViewRendererData,
         _: PriceAxisViewRendererData,
         commonRendererData: PriceAxisViewRendererCommonData
     ): void {
         axisRendererData.visible = false;
-
-        if(!this._source.options().horzLine.labelVisible) {
+        if (!this._source.options().horzLine.labelVisible) {
             return;
         }
 
         const mainSource = this._priceScale.mainSource();
         const firstValue = mainSource !== null ? mainSource.firstValue() : null;
-        if(!this._source.visible() || this._priceScale.isEmpty() || firstValue === null) {
+        if (!this._source.visible() || this._priceScale.isEmpty() || (firstValue === null)) {
             return;
         }
 
@@ -40,9 +39,7 @@ export class CrossHairPriceAxisView extends PriceAxisView {
 
         const value = this._valueProvider(this._priceScale);
         commonRendererData.coordinate = value.coordinate;
-
         axisRendererData.text = this._priceScale.formatPrice(value.price, firstValue);
         axisRendererData.visible = true;
     }
-    
 }

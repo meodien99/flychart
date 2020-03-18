@@ -2,6 +2,7 @@ import { ChartModel } from "./Chart";
 import { DataSource } from "./DataSource";
 import { HorzAlign, VertAlign } from "../renderers/WatermarkRenderer";
 import { WatermarkPaneView } from "../views/pane/WatermarkPaneView";
+import { IPaneView } from '../views/pane/ipane-view';
 
 export type WatermarkOptions = {
     color: string;
@@ -22,7 +23,7 @@ export class Watermark extends DataSource {
 		this._paneView = new WatermarkPaneView(this);
 	}
 
-	public paneViews(): ReadonlyArray<WatermarkPaneView> {
+	public paneViews(): ReadonlyArray<IPaneView> {
 		return [this._paneView];
 	}
 

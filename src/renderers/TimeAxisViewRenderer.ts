@@ -23,20 +23,21 @@ export class TimeAxisViewRenderer implements ITimeAxisViewRenderer {
     }
 
     public draw(ctx: CanvasRenderingContext2D, rendererOptions: TimeAxisViewRendererOptions): void {
-        if(this._data === null || this._data.visible === false || this._data.text.length === 0)
+        if (this._data === null || this._data.visible === false || this._data.text.length === 0) {
             return;
+        }
 
         ctx.font = rendererOptions.font;
 
         const textWidth = Math.round(rendererOptions.widthCache.measureText(ctx, this._data.text, optimizationReplacementRegex));
-        if(textWidth <= 0)
+        if (textWidth <= 0) {
             return;
+        }
 
         const horzMargin = rendererOptions.paddingHorizontal;
         const labelWidth = textWidth + 2 * horzMargin;
         const labelWidthHalf = labelWidth / 2;
         const timeScaleWidth = this._data.width;
-
         let coordinate = this._data.coordinate;
         let x1 = Math.floor(coordinate - labelWidthHalf) + 0.5;
 
@@ -63,16 +64,16 @@ export class TimeAxisViewRenderer implements ITimeAxisViewRenderer {
         const tickBottom = tickTop + rendererOptions.borderSize + rendererOptions.tickLength;
 
         ctx.strokeStyle = this._data.color;
- 		ctx.beginPath();
- 		ctx.moveTo(tickX, tickTop);
- 		ctx.lineTo(tickX, tickBottom);
- 		ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(tickX, tickTop);
+        ctx.lineTo(tickX, tickBottom);
+        ctx.stroke();
 
- 		const yText = y2 - rendererOptions.baselineOffset - rendererOptions.paddingBottom;
- 		ctx.textAlign = 'left';
- 		ctx.fillStyle = this._data.color;
+        const yText = y2 - rendererOptions.baselineOffset - rendererOptions.paddingBottom;
+        ctx.textAlign = 'left';
+        ctx.fillStyle = this._data.color;
 
- 		ctx.fillText(this._data.text, x1 + horzMargin, yText);
+        ctx.fillText(this._data.text, x1 + horzMargin, yText);
     }
 }
 

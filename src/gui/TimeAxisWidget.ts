@@ -16,7 +16,7 @@ import { makeFont } from "../helpers/make-font";
 import { TextWidthCache } from "../models/TextWidthCache";
 import { PriceAxisStub, PriceAxisStubParams } from "./PriceAxisStub";
 
- const enum Constants {
+const enum Constants {
     BorderSize = 1,
     TickLength = 3,
 }
