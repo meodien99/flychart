@@ -34,7 +34,6 @@ export abstract class LinePaneViewBase<ItemType extends PricedValue & TimedValue
         const barValueGetter = this._series.barFunction();
         const newItems: ItemType[] = [];
         const colorer = this._series.barColorer();
-        console.warn('this._series.bars()', this._series.bars())
 
         this._series.bars().each((index: TimePointIndex, bar: Bar) => {
             const value = barValueGetter(bar.value);

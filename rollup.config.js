@@ -16,8 +16,8 @@ function getCurrentVersion() {
 const currentVersion = getCurrentVersion();
 
 function getConfig(inputFile, type, isProd) {
-	const suffix = type === 'module' ? 'esm' : 'standalone';
-	const mode = isProd ? 'production' : 'development';
+	const suffix = type === 'module' ? 'esm' : 'stalone';
+	const mode = isProd ? 'prod' : 'dev';
 
 	const config = {
 		input: inputFile,

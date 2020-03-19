@@ -275,7 +275,6 @@ export class TimeScale {
         const lastBar = Math.max(visibleBars.lastBar(), visibleBars.lastBar() - indexPerLabel);
 
         const items = this._tickMarks.build(spacing, maxLabelWidth);
-		console.warn('items', items, spacing, maxLabelWidth);
 
         let targetIndex = 0;
         for (const tm of items) {
