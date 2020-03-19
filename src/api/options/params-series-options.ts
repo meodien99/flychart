@@ -33,18 +33,18 @@ import { SeriesOptions } from "../../models/SeriesOptions";
     lineStyle: {
         color: '#6d7973',
         lineStyle: LineStyle.Solid,
-        lineWidth: 3,
+        lineWidth: 2,
         crossHairMarkerVisible: true,
-        crossHairMarkerRadius: 4,
+        crossHairMarkerRadius: 3,
     },
     areaStyle: {
         topColor: 'rgba( 46, 220, 135, 0.4)',
         bottomColor: 'rgba( 40, 221, 100, 0)',
         lineColor: '#33D778',
         lineStyle: LineStyle.Solid,
-        lineWidth: 3,
+        lineWidth: 2,
         crossHairMarkerVisible: true,
-        crossHairMarkerRadius: 4,
+        crossHairMarkerRadius: 3,
     },
     histogramStyle: {
         color: '#26a69a',

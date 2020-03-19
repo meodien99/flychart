@@ -37,7 +37,6 @@ export class TimeAxisWidget implements MouseEventHandlers, IDestroyable {
     private readonly _leftStubCell: HTMLElement;
     private readonly _rightStubCell: HTMLElement;
     private readonly _cell: HTMLElement;
-    private readonly _dv: HTMLElement;
     private readonly _canvas: HTMLCanvasElement;
     private readonly _canvasContext: CanvasRenderingContext2D;
     private readonly _topCanvas: HTMLCanvasElement;
@@ -66,14 +65,15 @@ export class TimeAxisWidget implements MouseEventHandlers, IDestroyable {
         this._cell.style.height = '25px';
         this._cell.style.padding = '0';
 
-        this._dv = document.createElement('div');
-        this._dv.style.width = '100%';
-        this._dv.style.height = '100%';
-        this._dv.style.position = 'relative';
-        this._dv.style.overflow = 'hidden';
-        this._cell.appendChild(this._dv);
+        let div = document.createElement('div');
 
-        this._canvas = addCanvasTo(this._dv, new Size(16, 16));
+        div.style.width = '100%';
+        div.style.height = '100%';
+        div.style.position = 'relative';
+        div.style.overflow = 'hidden';
+        this._cell.appendChild(div);
+
+        this._canvas = addCanvasTo(div, new Size(16, 16));
         this._canvas.style.position = 'absolute';
         this._canvas.style.zIndex = '1';
         this._canvas.style.left = '0';
@@ -81,7 +81,7 @@ export class TimeAxisWidget implements MouseEventHandlers, IDestroyable {
 
         this._canvasContext = ensureNotNull(getContext2d(this._canvas));
 
-        this._topCanvas = addCanvasTo(this._dv, new Size(16, 16));
+        this._topCanvas = addCanvasTo(div, new Size(16, 16));
         this._topCanvas.style.position = 'absolute';
         this._topCanvas.style.zIndex = '2';
         this._topCanvas.style.left = '0';
