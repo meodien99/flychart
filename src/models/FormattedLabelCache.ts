@@ -13,7 +13,7 @@ export class LabelCache {
 
     private _actualSize: number = 0;
     private _usageTick: number = 1;
-    private _oldestTick: number = 0;
+    private _oldestTick: number = 1;
 
     private _cache: Map<number, CachedTick> = new Map();
     private _tick2Labels: Map<number, number> = new Map();

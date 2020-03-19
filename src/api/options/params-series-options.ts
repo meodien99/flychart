@@ -31,7 +31,7 @@ import { SeriesOptions } from "../../models/SeriesOptions";
         thinBars: true,
     },
     lineStyle: {
-        color: '#2196f3',
+        color: '#6d7973',
         lineStyle: LineStyle.Solid,
         lineWidth: 3,
         crossHairMarkerVisible: true,

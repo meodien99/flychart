@@ -124,7 +124,7 @@ export class CrossHair extends DataSource {
 
         // for current position always return both price and coordinate
         this._currentPosPriceProvider = valuePriceProvider(() => this._price as BarPrice, () => this._y);
-        const currentPosTimeProvider = valueTimeProvider(() => this._index, () => this._y);
+        const currentPosTimeProvider = valueTimeProvider(() => this._index, () => this.appliedX());
 
         this._timeAxisView = new CrossHairTimeAxisView(this, model, currentPosTimeProvider);
         this._paneView = new CrossHairPaneView(this);

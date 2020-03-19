@@ -254,7 +254,7 @@ export class TimeAxisWidget implements MouseEventHandlers, IDestroyable {
 
     private _drawTickMarks(ctx: CanvasRenderingContext2D): void {
         const tickMarks = this._chart.model().timeScale().marks();
-
+        console.warn('x', tickMarks);
         if (!tickMarks || tickMarks.length === 0) {
             return;
         }
@@ -323,6 +323,7 @@ export class TimeAxisWidget implements MouseEventHandlers, IDestroyable {
         ctx.font = this._baseBoldFont();
         for (const tickMark of tickMarks) {
             if (tickMark.span >= maxSpan) {
+                console.warn('tickmark 2', tickMark.label)
                 ctx.fillText(tickMark.label, tickMark.coord, yText);
             }
         }

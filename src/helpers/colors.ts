@@ -1,6 +1,6 @@
 import { RedColor, GreenColor, BlueColor, AlphaColor, Rgb, Rgba } from "./color";
 
-//https://www.color-hex.com/color
+//https://www.color-hex.com
 const namedColorRgbHexStrings = {
     aliceblue: '#f0f8ff',
  	antiquewhite: '#faebd7',

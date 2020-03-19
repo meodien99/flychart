@@ -143,8 +143,8 @@ export class TickMarks {
             const currentSpan = ensureDefined(this._markBySpan[span]);
             const currentSpanLength = currentSpan.length;
 
-            let leftIndex = Infinity;
-            let rightIndex = -Infinity;
+            let leftIndex = -Infinity;
+            let rightIndex = Infinity;
 
             for(let i = 0; i < currentSpanLength; i++) {
                 const mark = currentSpan[i];

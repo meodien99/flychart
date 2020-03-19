@@ -134,8 +134,6 @@ export class TimeScale {
     }
 
     public visibleBars(): BarsRange | null {
-        console.warn('_visibleBarsInvalidated', this._visibleBarsInvalidated, this._visibleBars);
-
         if (this._visibleBarsInvalidated) {
             this._visibleBarsInvalidated = false;
             this._updateVisibleBars();
@@ -277,6 +275,7 @@ export class TimeScale {
         const lastBar = Math.max(visibleBars.lastBar(), visibleBars.lastBar() - indexPerLabel);
 
         const items = this._tickMarks.build(spacing, maxLabelWidth);
+		console.warn('items', items, spacing, maxLabelWidth);
 
         let targetIndex = 0;
         for (const tm of items) {
