@@ -2,7 +2,7 @@
 
 Fly charts is the small and high performative financial HTML5 charts for experimental purpose.
 
-[demo](https://unpkg.com/)
+[demo](https://codepen.io/madcat/pen/poJZzaz)
 ### Chart types
 
 - [x] Line
