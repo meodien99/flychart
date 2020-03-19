@@ -9,7 +9,7 @@ import { TimeRange, ITimeScaleApi } from "./itime-scale-api";
 import { DataLayer } from "./DataLayer";
 import { TimeScaleApi } from "./TimeScaleApi";
 import { PriceScaleApi } from "./PriceScaleApi";
-import { ChartWidget, MouseEventParamsImpl } from "../gui/ChartWidget";
+import { ChartWidget, MouseEventParamsImpl } from "../ui/ChartWidget";
 import { ISeriesApi } from "./iseries-api";
 import { ensureDefined } from "../helpers/assertions";
 // import { HistogramSeriesParams, IHistogramSeriesApi } from "./ihistogram-series-api";

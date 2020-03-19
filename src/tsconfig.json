@@ -6,7 +6,7 @@
     "references": [
         { "path": "./api" },
         { "path": "./formatters" },
-        { "path": "./gui" },
+        { "path": "./ui" },
         { "path": "./helpers" },
         { "path": "./tsconfig.model.json" }
     ],

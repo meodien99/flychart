@@ -196,8 +196,8 @@
 						"order": 30
 					},
 					{
-						"name": "gui",
-						"match": "\\.\\./gui/",
+						"name": "ui",
+						"match": "\\.\\./ui/",
 						"order": 40
 					},
 					{
