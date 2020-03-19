@@ -44,7 +44,7 @@
     "tsc-all-watch": "tsc -b . --watch --preserveWatchOutput",
     "lint": "npm-run-all -p lint:**",
     "lint:eslint": "eslint --format=unix --ext .js ./",
-    "lint:tslint": "tslint --config tslint.json --project tsconfig.all-non-composite.json",
+    "lint:tslint": "tslint --config tslint.json --project tsconfig.non-composite.json",
     "rollup": "rollup -c rollup.config.js",
     "build": "npm-run-all tsc rollup bundle-dts",
     "verify": "npm-run-all clean tsc-all lint build test",
